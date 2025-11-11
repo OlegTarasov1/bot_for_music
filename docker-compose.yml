@@ -1,0 +1,36 @@
+
+services:
+  tg_bot:
+    env_file:
+      - .env
+    build:
+      context: ./tg_bot
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      pg_container:
+        condition: service_healthy
+    volumes:
+      - ./tg_bot/src:/app
+
+  pg_container:
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: '${PG_DATABASE_NAME}'
+      POSTGRES_PASSWORD: ${PG_USER_PASSWORD}
+      POSTGRES_USER: ${PG_USER_NAME}
+    build:
+      context: ./docker_confs/postgres
+      dockerfile: Dockerfile
+    ports:
+      - ${PG_EXTERNAL_PORT}:${PG_INTERNAL_PORT}
+    volumes:
+      - ./docker_confs/postgres/data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER_NAME} -d ${PG_DATABASE_NAME}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
