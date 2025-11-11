@@ -1,0 +1,56 @@
+from models.base import Base
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import BigInteger, String
+
+class UsersBase(Base):
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key = True)
+    username: Mapped[str | None] = mapped_column(String(255), nullable = True)
+    first_name: Mapped[str | None] = mapped_column(String(255), nullable = True)
+    last_name: Mapped[str | None] = mapped_column(String(255), nullable = True)
+    chat_id: Mapped[int | None] = mapped_column(BigInteger, nullable = True)
+    is_admin: Mapped[bool] = mapped_column(default = False)
+
+    playlists: Mapped[list["PlaylistsBase"]] = relationship(back_populates = "user")
+
+
+class PlaylistsBase(Base):
+
+    __tablename__ = "playlists"
+    
+    id: Mapped[int] = mapped_column(primary_key = True)
+    playlist_name: Mapped[str] = mapped_column(String(255))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete = "CASCADE"))
+
+    user: Mapped["UsersBase"] = relationship(back_populates = "playlists")
+    songs: Mapped[list["SongsBase"]] = relationship(back_populates = "playlists", secondary = "songs_playlists_association")
+
+
+class SongsBase(Base):
+
+    __tablename__ = "songs"
+
+    id: Mapped[int] = mapped_column(primary_key = True)
+    song_title: Mapped[str] = mapped_column(String(255))
+    song_link: Mapped[str | None] = mapped_column(nullable = True)
+
+    playlists: Mapped[list["PlaylistsBase"]] = relationship(back_populates = "songs", secondary = "songs_playlists_association")
+
+
+# Association tables
+
+class SongsPlaylistsAssociation(Base):
+
+    __tablename__ = "songs_playlists_association"
+
+    id: Mapped[int] = mapped_column(primary_key = True)
+
+    song_id: Mapped[int] = mapped_column(ForeignKey("songs.id", ondelete = "CASCADE"))
+    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete = "CASCADE"))
+
+    __table_args__ = (
+        UniqueConstraint("song_id", "playlist_id", name = "song_playlist_connection"),
+    )

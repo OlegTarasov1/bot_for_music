@@ -1,6 +1,7 @@
 from settings.logg_settings import logger
 import asyncio
 import os
+from views import master_router
 from aiogram import (
     Bot,
     Dispatcher
@@ -12,6 +13,7 @@ async def main():
 
     dp = Dispatcher()
     logger.info("PROJECT START...\n\n\n")
+    dp.include_router(master_router)
     await dp.start_polling(bot)
 
 
