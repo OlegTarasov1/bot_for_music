@@ -8,4 +8,4 @@ migrate:
 	alembic upgrade head
 
 start-app:
-	make makemigrations && make migrate && python3 main.py
+	make migrate && python3 main.py
