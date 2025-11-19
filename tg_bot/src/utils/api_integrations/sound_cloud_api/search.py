@@ -1,41 +1,31 @@
-import json
 from yt_dlp import YoutubeDL
 import logging
+import json
 
 
+def search_for_music(
+    search_data: str,
+    max_results: int | None = 50
+) -> list[dict] | None:
+    ydl_opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "extract_flat": True,
+        "skip_download": True
+    }
+    search_query = f"scsearch{max_results if max_results else ''}:{search_data}"
 
-def list_links(quert):
-    pass
+    with YoutubeDL(ydl_opts) as ydl:
+        result = ydl.extract_info(search_query, download = False)
+        if "entries" in result:
+            return result["entries"]
+        else:
+            return None
 
 
+print(search_for_music("sophie powers", 1))
 
-
-
-
-
-
-
-
-# def search_for_music(
-#     search_data: str,
-#     max_results: int = 10
-# ) -> dict | None:
-#     ydl_opts = {
-#         "quiet": True,
-#         "no_warnings": True,
-#         "extract_flat": True,
-#         "skip_download": True
-#     }
-#     search_query = f"scsearch{max_results}:{search_data}"
-
-#     with YoutubeDL(ydl_opts) as ydl:
-#         result = ydl.extract_info(search_query, download = False)
-#         # print(f"{result}\n\n")
-#         if "entries" in result:
-#             return result["entries"]
-#         else:
-#             return None
-
+# print(get_soundcloud_genres())
 
 
 # def get_direct_music_url(

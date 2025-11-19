@@ -9,11 +9,11 @@ tops_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text = "По жанрам",
-                callback_data = "shutter"
+                callback_data = "tops_by_genres"
             ),
             InlineKeyboardButton(
                 text = "По странам",
-                callback_data = "shutter"
+                callback_data = "tops_by_countries"
             )
         ],
         [
