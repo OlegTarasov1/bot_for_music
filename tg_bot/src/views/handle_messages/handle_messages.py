@@ -1,6 +1,7 @@
 from utils.api_integrations.sound_cloud_api.search import search_for_music
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from settings.cache_settings import redis_client
+from .msg_callbacks.retreive_track import retreival_router
 from aiogram.types import Message
 from aiogram import Router, F
 import logging
@@ -9,6 +10,7 @@ import json
 
 messages_router = Router()
 
+messages_router.include_router(retreival_router)
 
 @messages_router.message(F.text)
 async def handle_text(msg: Message):

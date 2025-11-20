@@ -23,7 +23,7 @@ def search_for_music(
             return None
 
 
-print(search_for_music("sophie powers", 1))
+# print(*search_for_music("sophie powers", 10), sep="\n\n")
 
 # print(get_soundcloud_genres())
 

@@ -21,6 +21,7 @@ async def list_music_kb(
         json_list = search_for_music(request)
         await redis_client.set(request, json.dumps(json_list).encode("utf-8"), ex = 60*60)
 
+    logging.warning(json_list[0])
 
     kb = InlineKeyboardBuilder()
 
@@ -30,11 +31,13 @@ async def list_music_kb(
     for i, value in enumerate(json_list[start:finish]):
         kb.add(
             InlineKeyboardButton(
-                text = f"{i}. {value.get('title')}",
+                text = f"{start + i + 1}. {value.get('title')}",
                 callback_data = MusicCallback(
                     action = "retreive",
                     offset = offset,
-                    limit = limit
+                    limit = limit,
+                    request = request,
+                    track_id = value.get('id')
                 ).pack()
             )
         )
@@ -45,7 +48,8 @@ async def list_music_kb(
                 callback_data = MusicCallback(
                     action = "get",
                     offset = offset - 1,
-                    limit = limit
+                    limit = limit,
+                    request = request
                 ).pack()
             )
         )
@@ -56,6 +60,7 @@ async def list_music_kb(
                 callback_data = MusicCallback(
                     action = "get",
                     offset = offset + 1,
+                    request = request,
                     limit = limit
                 ).pack()
             )
