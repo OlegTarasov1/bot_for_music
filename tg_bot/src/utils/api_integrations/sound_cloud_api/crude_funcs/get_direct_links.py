@@ -1,7 +1,12 @@
 from yt_dlp import YoutubeDL
+from pathlib import Path
+from uuid import uuid4
+import logging
+import asyncio
+import os
 
 
-def get_direct_music_url(
+async def get_direct_music_url(
     url: str
 ) -> dict:
     ydl_opts = {
@@ -12,18 +17,75 @@ def get_direct_music_url(
     }
 
     with YoutubeDL(ydl_opts) as ydl:
-        result = ydl.extract_info(url, download = False)
+        result = await asyncio.to_thread(
+            ydl.extract_info,
+            url,
+            download = False
+        )
 
     return result
 
 
-def get_mp3_links(
+async def get_mp3_links(
     entrie: dict[dict[str]]
-):
-    link = None
-    
-    for i in entrie.get("formats", []):
-        if i.get("format_id", "").startswith("http_mp3"):
-            link = i.get("url")
+) -> list[str] | None:
+    links = []
 
-    return link
+    for i in entrie.get("formats", []):
+        if i.get("format_id", "").startswith("http_mp3") and i.get("url", None):
+            links.append(i.get("url"))
+
+    return links
+
+
+async def install_track(
+    download_links: list[str]
+) -> str | None:
+    output_link = Path("/app/media")
+    output_link.mkdir(parents = True, exist_ok = True)
+
+    for i, value in enumerate(download_links):
+        # try:
+        logging.warning("обработка...")
+        file_name = uuid4()
+        output_template = str(output_link / f"{file_name}.%(ext)s")
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': output_template,
+            'quiet': False,
+        }
+
+        with YoutubeDL(ydl_opts) as ydl:
+            await asyncio.to_thread(
+                ydl.download,
+                value
+            )
+        
+        response = output_link / f"{file_name}.mp3"
+        logging.warning("response after download:")
+        logging.warning(response)
+        logging.warning("downloaded check")
+        return response 
+
+        # except Exception as e:
+        #     logging.warning(e)
+        #     continue
+    return None
+
+
+async def delete_file(
+    filepath: str
+) -> bool:
+    try: 
+        await asyncio.to_thread(
+            os.remove,
+            filepath
+        )
+        return True
+    except Exception as e:
+        logging.warning(e)
+        return False
+
+
+
+

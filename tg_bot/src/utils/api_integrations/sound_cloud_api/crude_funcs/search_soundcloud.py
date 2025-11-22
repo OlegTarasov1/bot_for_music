@@ -1,7 +1,8 @@
 from yt_dlp import YoutubeDL
+import asyncio
 
 
-def search_for_music(
+async def search_for_music(
     search_data: str,
     max_results: int = 10
 ) -> dict | None:
@@ -14,7 +15,7 @@ def search_for_music(
     search_query = f"scsearch{max_results}:{search_data}"
 
     with YoutubeDL(ydl_opts) as ydl:
-        result = ydl.extract_info(search_query, download = False)
+        result = await asyncio.to_thread(ydl.extract_info(search_query, download = False))
         if "entries" in result:
             return result["entries"]
         else:

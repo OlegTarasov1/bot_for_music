@@ -18,7 +18,7 @@ async def list_music_kb(
         json_list = json.loads(json_list)
     
     if not json_list:
-        json_list = search_for_music(request)
+        json_list = await search_for_music(request)
         await redis_client.set(request, json.dumps(json_list).encode("utf-8"), ex = 60*60)
 
     logging.warning(json_list[0])
