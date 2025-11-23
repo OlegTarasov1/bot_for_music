@@ -45,31 +45,31 @@ async def install_track(
     output_link.mkdir(parents = True, exist_ok = True)
 
     for i, value in enumerate(download_links):
-        # try:
-        logging.warning("обработка...")
-        file_name = uuid4()
-        output_template = str(output_link / f"{file_name}.%(ext)s")
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': output_template,
-            'quiet': False,
-        }
+        try:
+            logging.warning("обработка...")
+            file_name = uuid4()
+            output_template = str(output_link / f"{file_name}.%(ext)s")
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'outtmpl': output_template,
+                'quiet': False,
+            }
 
-        with YoutubeDL(ydl_opts) as ydl:
-            await asyncio.to_thread(
-                ydl.download,
-                value
-            )
-        
-        response = output_link / f"{file_name}.mp3"
-        logging.warning("response after download:")
-        logging.warning(response)
-        logging.warning("downloaded check")
-        return response 
+            with YoutubeDL(ydl_opts) as ydl:
+                await asyncio.to_thread(
+                    ydl.download,
+                    value
+                )
+            
+            response = output_link / f"{file_name}.mp3"
+            logging.warning("response after download:")
+            logging.warning(response)
+            logging.warning("downloaded check")
+            return response 
 
-        # except Exception as e:
-        #     logging.warning(e)
-        #     continue
+        except Exception as e:
+            logging.warning(e)
+            continue
     return None
 
 

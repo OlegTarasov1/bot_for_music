@@ -41,8 +41,11 @@ async def list_music_kb(
                 ).pack()
             )
         )
+    kb = kb.adjust(2)
+
+    nav_blk = []
     if start > 0:
-        kb.add(
+        nav_blk.append(
             InlineKeyboardButton(
                 text = "Назад",
                 callback_data = MusicCallback(
@@ -54,7 +57,7 @@ async def list_music_kb(
             )
         )
     if finish < len(json_list):
-        kb.add(
+        nav_blk.append(
             InlineKeyboardButton(
                 text = "Вперёд",
                 callback_data = MusicCallback(
@@ -65,7 +68,11 @@ async def list_music_kb(
                 ).pack()
             )
         )
-        kb = kb.adjust(2)
+
+    if nav_blk:
+        kb.row(
+            *nav_blk
+        )
 
     kb.row(
         InlineKeyboardButton(
