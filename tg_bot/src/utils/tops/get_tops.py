@@ -18,7 +18,7 @@ async def get_top_by_country(
         )
     
     if response.status_code == 200:
-        return response.json()
+        return response.json().get("tracks", dict())
     else:
         return None
 

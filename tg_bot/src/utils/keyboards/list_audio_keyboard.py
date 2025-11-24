@@ -19,9 +19,15 @@ async def list_music_kb(
     
     if not json_list:
         json_list = await search_for_music(request)
-        await redis_client.set(request, json.dumps(json_list).encode("utf-8"), ex = 60*60)
-
-    logging.warning(json_list[0])
+        await redis_client.set(
+            request,
+            json.dumps(
+                json_list
+            ).encode("utf-8"),
+            ex = 60*60 if
+            not request.startswith("top_")
+            else 60*60*24
+        )
 
     kb = InlineKeyboardBuilder()
 
