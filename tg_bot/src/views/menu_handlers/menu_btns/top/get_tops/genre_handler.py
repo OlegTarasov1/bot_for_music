@@ -59,7 +59,8 @@ async def track_retreival_handler(
         reply_markup = await kb_track_retreival(
             limit = callback_data.limit,
             offset = callback_data.offset,
-            track_id = callback_data.track_id
+            track_id = callback_data.track_id,
+            genre = callback_data.genre
         )
     )
 
@@ -69,6 +70,16 @@ async def download_track(
     cb: CallbackQuery,
     callback_data: GenresTopsCallback
 ):
+    genres = await get_genres()
+
+    await cb.message.edit_text(
+        text = "Выберите:",
+        reply_markup = await get_kb_for_tops_by_genres(
+            tags = genres
+        )
+    )
+    await cb.answer("Отправляется...")
+
     logging.warning(f"getting track by id...:{callback_data.track_id}")
     track_json = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id

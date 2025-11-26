@@ -66,34 +66,36 @@ async def get_kb_for_tops_by_genres(
 async def kb_track_retreival(
     limit: int,
     offset: int,
-    track_id: int
+    track_id: int,
+    genre: str
 ) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
 
+    logging.warning(genre)
+    
     kb.add(
-        *[
-            InlineKeyboardButton(
-                text = "Скачать",
-                callback_data = GenresTopsCallback(
-                    action = "download",
-                    limit = limit,
-                    track_id = track_id,
-                    offset = offset
-                ).pack()
-            ),
-            InlineKeyboardButton(
-                text = "Назад",
-                callback_data = GenresTopsCallback(
-                    action = "retreive",
-                    limit = limit,
-                    offset = offset
-                ).pack()
-            ),
-            InlineKeyboardButton(
-                text = "Меню",
-                callback_data = "menu"
-            )
-        ]
+        InlineKeyboardButton(
+            text = "Скачать",
+            callback_data = GenresTopsCallback(
+                action = "download",
+                limit = limit,
+                track_id = track_id,
+                offset = offset
+            ).pack()
+        ),
+        InlineKeyboardButton(
+            text = "Назад",
+            callback_data = GenresTopsCallback(
+                action = "retreive",
+                limit = limit,
+                offset = offset,
+                genre = genre 
+            ).pack()
+        ),
+        InlineKeyboardButton(
+            text = "Меню",
+            callback_data = "menu"
+        )
     )
 
     return kb.as_markup()
