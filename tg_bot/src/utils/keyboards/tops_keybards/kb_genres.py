@@ -1,6 +1,7 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from schemas.cb_schemas.cb_top_genres import GenresTopsCallback
+import logging
 
 
 async def get_kb_for_tops_by_genres(
@@ -14,7 +15,7 @@ async def get_kb_for_tops_by_genres(
     finish = offset * limit + limit
 
     btns = []
-
+    logging.warning("prior for loop")
     for i, value in enumerate(tags[start:finish]):
         btns.append(
             InlineKeyboardButton(
@@ -25,7 +26,7 @@ async def get_kb_for_tops_by_genres(
                 ).pack()
             )
         )
-    
+    logging.warning("after for loop")
     kb.add(*btns)
     kb.adjust(3)
 
@@ -59,3 +60,47 @@ async def get_kb_for_tops_by_genres(
     )
 
     return kb.as_markup()
+
+
+
+async def kb_track_retreival(
+    limit: int,
+    offset: int,
+    track_id: int
+) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+
+    kb.add(
+        *[
+            InlineKeyboardButton(
+                text = "Скачать",
+                callback_data = GenresTopsCallback(
+                    action = "download",
+                    limit = limit,
+                    track_id = track_id,
+                    offset = offset
+                ).pack()
+            ),
+            InlineKeyboardButton(
+                text = "Назад",
+                callback_data = GenresTopsCallback(
+                    action = "retreive",
+                    limit = limit,
+                    offset = offset
+                ).pack()
+            ),
+            InlineKeyboardButton(
+                text = "Меню",
+                callback_data = "menu"
+            )
+        ]
+    )
+
+    return kb.as_markup()
+
+
+
+
+
+
+

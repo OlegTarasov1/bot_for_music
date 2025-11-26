@@ -20,11 +20,12 @@ async def country_top_handler(
     top = await redis_client.get(callback_data.country)
 
     if not top:
-
+        logging.warning("there was nothing in cache")
         country = callback_data.country[4:]
         top_json = await get_top_by_country(
             country = country
         )
+
 
         new_top = []
         for i in top_json.get("track", dict()):
@@ -35,7 +36,6 @@ async def country_top_handler(
                 )
                 new_top.append(*track_data)
 
-        logging.warning("done getting top")
 
         if new_top:
             await redis_client.set(
@@ -44,12 +44,14 @@ async def country_top_handler(
                 ex = 60*60
             )
 
-        await cb.message.edit_text(
-            text = "Введите:",
-            reply_markup = await list_music_kb(
-                request = callback_data.country
-            )
-        ) 
+        logging.warning(callback_data.country)
+
+    await cb.message.edit_text(
+        text = "Введите:",
+        reply_markup = await list_music_kb(
+            request = callback_data.country
+        )
+    ) 
 
         
 

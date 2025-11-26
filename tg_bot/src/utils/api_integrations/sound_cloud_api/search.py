@@ -49,3 +49,26 @@ async def get_soundcloud_track_by_id(track_id: int | str) -> dict | None:
             return None
 
 
+
+async def search_for_music_by_tag(
+    search_data: str,
+    max_results: int | None = 50
+) -> list[dict] | None:
+    ydl_opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "extract_flat": True,
+        "skip_download": True
+    }
+    search_query = f"scsearch{max_results if max_results else ''}:tag:{search_data}"
+
+    with YoutubeDL(ydl_opts) as ydl:
+        result = await asyncio.to_thread(
+            ydl.extract_info,
+            search_query,
+            download = False
+        )
+        if "entries" in result:
+            return result["entries"]
+        else:
+            return None

@@ -8,5 +8,6 @@ class GenresTopsCallback(
     action: str = "get"
     offset: int = 0
     limit: int  = 9
-    
+
+    track_id: int | None = None    
     genre: str | None = None
