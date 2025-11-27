@@ -27,9 +27,7 @@ async def get_user_data(msg: Message):
             last_name = new_user_data.last_name,
             username = new_user_data.username,
             chat_id = msg.chat.id
-        )
-        logging.info("new user added")
-    
+        )    
 
     await msg.answer(
         text = "Меню",

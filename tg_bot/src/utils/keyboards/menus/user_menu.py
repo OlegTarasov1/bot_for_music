@@ -12,7 +12,7 @@ user_menu = InlineKeyboardMarkup(
         )],
         [InlineKeyboardButton(
             text = "Плейлисты 🎧",
-            callback_data = "shutter"
+            callback_data = "playlists"
         )],
         [InlineKeyboardButton(
             text = "Топы",

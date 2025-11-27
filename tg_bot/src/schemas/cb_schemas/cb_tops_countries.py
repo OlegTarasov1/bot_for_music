@@ -3,7 +3,7 @@ from aiogram.filters.callback_data import CallbackData
 
 class CountriesTopsCallback(
     CallbackData,
-    prefix = "top_countries_"
+    prefix = "c"
 ):
     action: str = "get"
     offset: int = 0

@@ -3,7 +3,7 @@ from aiogram.filters.callback_data import CallbackData
 
 class GenresTopsCallback(
     CallbackData,
-    prefix = "top_genres_"
+    prefix = "g"
 ):
     action: str = "get"
     offset: int = 0

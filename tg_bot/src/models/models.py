@@ -23,7 +23,7 @@ class PlaylistsBase(Base):
     __tablename__ = "playlists"
     
     id: Mapped[int] = mapped_column(primary_key = True)
-    playlist_name: Mapped[str] = mapped_column(String(255))
+    title: Mapped[str] = mapped_column(String(255))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete = "CASCADE"))
 
     user: Mapped["UsersBase"] = relationship(back_populates = "playlists")
@@ -34,9 +34,8 @@ class SongsBase(Base):
 
     __tablename__ = "songs"
 
-    id: Mapped[int] = mapped_column(primary_key = True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key = True)
     song_title: Mapped[str] = mapped_column(String(255))
-    song_link: Mapped[str | None] = mapped_column(nullable = True)
 
     playlists: Mapped[list["PlaylistsBase"]] = relationship(back_populates = "songs", secondary = "songs_playlists_association")
 
