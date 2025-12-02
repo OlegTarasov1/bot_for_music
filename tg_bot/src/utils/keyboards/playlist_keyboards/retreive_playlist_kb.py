@@ -20,10 +20,11 @@ async def retreive_playlist(
     for i, value in enumerate(playlist_data.songs[start:finish]):
         kb.add(
             InlineKeyboardButton(
-                text = f"{i}. {value.title}",
+                text = f"{start + i + 1}. {value.song_title}",
                 callback_data = PlaylistCallback(
                     action = "audio",
-                    playlist_id = value.id,
+                    playlist_id = playlist_data.id,
+                    track_id = value.id,
                     limit = limit,
                     offset = offset,
                     track_offset = track_offset,
@@ -32,6 +33,7 @@ async def retreive_playlist(
             )
         )
 
+    kb.adjust(2)
 
     kb.row(
         InlineKeyboardButton(

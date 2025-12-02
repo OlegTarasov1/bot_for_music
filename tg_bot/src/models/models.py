@@ -33,7 +33,7 @@ class PlaylistsBase(Base):
 class SongsBase(Base):
 
     __tablename__ = "songs"
-
+    
     id: Mapped[int] = mapped_column(BigInteger, primary_key = True)
     song_title: Mapped[str] = mapped_column(String(255))
 
@@ -50,8 +50,6 @@ class SongsPlaylistsAssociation(Base):
 
     song_id: Mapped[int] = mapped_column(ForeignKey("songs.id", ondelete = "CASCADE"))
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete = "CASCADE"))
-    
-    json_meta: Mapped[dict] = mapped_column(JSONB)
 
     __table_args__ = (
         UniqueConstraint("song_id", "playlist_id", name = "song_playlist_connection"),

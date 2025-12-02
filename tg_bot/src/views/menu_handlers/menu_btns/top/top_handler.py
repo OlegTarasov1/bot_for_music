@@ -1,10 +1,11 @@
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, FSInputFile
 from aiogram import Router, F
 from utils.keyboards.tops_get import tops_kb
 from utils.keyboards.tops_keybards.kb_countries import get_kb_for_tops_by_countries
 from utils.tops.get_genres import get_genres
 from utils.keyboards.tops_keybards.kb_genres import get_kb_for_tops_by_genres
 from .get_tops.country_handler import country_getting_router
+from crude.crude_path import path_vibe_final
 from .get_tops.genre_handler import genre_getting_router
 
 tops_router = Router()
@@ -15,8 +16,9 @@ tops_router.include_router(genre_getting_router)
 
 @tops_router.callback_query(F.data == "tops")
 async def get_tops(cb: CallbackQuery):
-    await cb.message.edit_text(
-        text = "Как ранжировать топы:",
+    await cb.message.edit_caption(
+        # caption = "Как ранжировать топы:",
+        # animation = FSInputFile(path_vibe_final),
         reply_markup = tops_kb
     )
 
@@ -30,8 +32,9 @@ async def get_tops_by_genres(cb: CallbackQuery):
         tags = tags
     )
 
-    await cb.message.edit_text(
-        text = "выберите жанр:",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        # text = "выберите жанр:",
         reply_markup = keyboard
     )
 
@@ -41,7 +44,8 @@ async def get_tops_by_countries(cb: CallbackQuery):
     
     keyboard = await get_kb_for_tops_by_countries()
 
-    await cb.message.edit_text(
-        text = "выберите страну:",
+    await cb.message.edit_caption(
+        # caption = "выберите страну:",
+        animaton = FSInputFile(path_vibe_final),
         reply_markup = keyboard
     )

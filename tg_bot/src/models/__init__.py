@@ -1,3 +1,3 @@
-from .models import UsersBase, PlaylistsBase, SongsBase
+from .models import UsersBase, PlaylistsBase, SongsBase, SongsPlaylistsAssociation
 
-__all__ = ["UsersBase", "PlaylistsBase", "SongsBase"]
+__all__ = ["UsersBase", "PlaylistsBase", "SongsBase", "SongsPlaylistsAssociation"]

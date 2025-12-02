@@ -1,7 +1,7 @@
 from schemas.cb_schemas.cb_top_genres import GenresTopsCallback
 from settings.cache_settings import redis_client
 from utils.keyboards.tops_keybards.kb_genres_retreival import retreive_genre
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, FSInputFile
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from utils.api_integrations.sound_cloud_api.search import get_soundcloud_track_by_id
 from aiogram import Router, F
@@ -10,6 +10,7 @@ from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import 
 from utils.tops.get_genres import get_genres
 from utils.keyboards.tops_keybards.kb_genres import get_kb_for_tops_by_genres, kb_track_retreival
 import logging
+from crude.crude_path import path_vibe_final
 import json
 
 
@@ -23,8 +24,9 @@ async def genre_top_list(
 ):
     genres = await get_genres()
 
-    await cb.message.edit_text(
-        text = "Выберите:",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        # caption = "Выберите:",
         reply_markup = await get_kb_for_tops_by_genres(
             tags = genres,
             limit = callback_data.limit,
@@ -39,8 +41,9 @@ async def genre_top_retreive(
     callback_data: GenresTopsCallback
 ):
     logging.warning(callback_data.genre)
-    await cb.message.edit_text(
-        text = "Выбрите:",
+    await cb.message.edit_caption(
+        animation = FSInputFile(path_vibe_final),
+        # text = "Выбрите:",
         reply_markup = await retreive_genre(
             genre = callback_data.genre.replace(" ", "_"),
             offset = callback_data.offset       
@@ -54,8 +57,9 @@ async def track_retreival_handler(
     cb: CallbackQuery,
     callback_data: GenresTopsCallback
 ):
-    await cb.message.edit_text(
-        text = "Выберите:",
+    await cb.message.edit_caption(
+        animation = FSInputFile(path_vibe_final),
+        # caption = "Выберите:",
         reply_markup = await kb_track_retreival(
             limit = callback_data.limit,
             offset = callback_data.offset,
@@ -72,15 +76,15 @@ async def download_track(
 ):
     genres = await get_genres()
 
-    await cb.message.edit_text(
-        text = "Выберите:",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        # caption = "Выберите:",
         reply_markup = await get_kb_for_tops_by_genres(
             tags = genres
         )
     )
     await cb.answer("Отправляется...")
 
-    logging.warning(f"getting track by id...:{callback_data.track_id}")
     track_json = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id
     )
@@ -94,7 +98,8 @@ async def download_track(
 
     await cb.message.answer_audio(
         audio = audio_file,
-        title = "test"
+        title = track_json.get("title", "No title")
     )
 
     await delete_file(file_dir)
+    

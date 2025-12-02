@@ -1,6 +1,9 @@
 from models import UsersBase
 from settings.db_settings import async_session
+from schemas.pydantic_mixins.user_schema import UserMixin
 from sqlalchemy import select
+from settings.cache_settings import redis_client_sql
+import json
 
 
 class UsersRequestsSQL:
@@ -25,6 +28,14 @@ class UsersRequestsSQL:
 
             await session.commit()
 
+            if new_user:
+                user_to_cache = UserMixin.model_validate(new_user)
+                await redis_client_sql.set(
+                    f"user_{new_user.id}",
+                    user_to_cache.model_dump_json(),
+                    ex = 60 * 60 *24 * 2
+                )
+            
             return new_user
 
 
@@ -32,6 +43,20 @@ class UsersRequestsSQL:
     async def get_user_by_id(
         tg_id: int
     ) -> UsersBase | None:
+        
+        cached_user = await redis_client_sql.get(f"user_{tg_id}")
+        if cached_user:
+            cached_user = json.loads(cached_user)
+            user = UsersBase(**cached_user)
+            
+            await redis_client_sql.set(
+                f"user_{user.id}",
+                cached_user,
+                ex = 60 * 60 * 24 * 2
+            )
+            return user
+
+        
         async with async_session() as session:
             stmt = (
                 select(
@@ -44,5 +69,13 @@ class UsersRequestsSQL:
 
             user = await session.execute(stmt)
             user = user.scalar_one_or_none()
+
+            if user:
+                user_to_cache = UserMixin.model_validate(user)
+                await redis_client_sql.set(
+                    f"user_{user.id}",
+                    user_to_cache.model_dump_json(),
+                    ex = 60 * 60 * 24 * 2
+                )
 
             return user

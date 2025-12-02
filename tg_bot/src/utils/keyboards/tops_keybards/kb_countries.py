@@ -11,7 +11,7 @@ async def get_kb_for_tops_by_countries() -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text = "🇺🇸",
             callback_data = CountriesTopsCallback(
-                country = "top_US"
+                country = "top_united states"
             ).pack()
         ),
         InlineKeyboardButton(
@@ -23,23 +23,40 @@ async def get_kb_for_tops_by_countries() -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text = "🇷🇺",
             callback_data = CountriesTopsCallback(
-                country = "top_RU"
+                country = "top_russia"
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "spain",
+            text = "🇪🇸",
             callback_data = CountriesTopsCallback(
                 country = "top_spain"
             ).pack()
         ),
         InlineKeyboardButton(
             text = "🇰🇿",
-            callback_data = "top_kazachstan"
+            callback_data = "top_kazakhstan"
         ),
         InlineKeyboardButton(
             text = "🇫🇷",
             callback_data = "top_france"
+        ),
+        InlineKeyboardButton(
+            text = "🇸🇪",
+            callback_data = "top_sweden"
+        ),
+        InlineKeyboardButton(
+            text = "🇮🇳",
+            callback_data = "top_india"
+        ),
+        InlineKeyboardButton(
+            text = "🇲🇽",
+            callback_data = "top_mexico"
+        ),
+        InlineKeyboardButton(
+            text = "🇯🇵",
+            callback_data = "top_japan"
         )
+
     )
 
     kb.adjust(3)

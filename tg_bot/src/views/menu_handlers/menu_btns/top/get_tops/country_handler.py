@@ -3,9 +3,10 @@ from schemas.cb_schemas.cb_tops_countries import CountriesTopsCallback
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from utils.tops.get_tops import get_top_by_country
 from settings.cache_settings import redis_client
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, FSInputFile
 from aiogram import Router, F
 import logging
+from crude.crude_path import path_vibe_final
 import json
 
 
@@ -18,6 +19,8 @@ async def country_top_handler(
     callback_data: CountriesTopsCallback
 ):
     top = await redis_client.get(callback_data.country)
+
+    logging.warning(top)
 
     if not top:
         logging.warning("there was nothing in cache")
@@ -46,8 +49,9 @@ async def country_top_handler(
 
         logging.warning(callback_data.country)
 
-    await cb.message.edit_text(
-        text = "Введите:",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        # caption = "Введите:",
         reply_markup = await list_music_kb(
             request = callback_data.country
         )

@@ -16,4 +16,6 @@ class PlaylistCallback(
     track_limit: int = 6
     track_offset: int = 0
 
+    # метаданные, ради которых всё и затевалось
     playlist_id: int | None = None
+    track_id: int | None = None

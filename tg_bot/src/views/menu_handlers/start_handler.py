@@ -3,10 +3,12 @@ from utils.keyboards.menu_getter import get_menu
 from .menu_btns.search.search_btn import search_btn_router
 from .menu_btns.top.top_handler import tops_router
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from aiogram import Router, F
+from crude.crude_path import path_vibe_final
 import asyncio
 import logging
+
 
 menu_router = Router()
 
@@ -19,6 +21,7 @@ async def get_user_data(msg: Message):
         tg_id = msg.from_user.id
     )
 
+
     if not user:
         new_user_data = msg.from_user
         user = await UsersRequestsSQL.create_new_user(
@@ -29,8 +32,10 @@ async def get_user_data(msg: Message):
             chat_id = msg.chat.id
         )    
 
-    await msg.answer(
-        text = "Меню",
+
+    await msg.answer_animation(
+        # caption = "Меню",
+        animation = FSInputFile(path_vibe_final),
         reply_markup = await get_menu(user)
     )
 

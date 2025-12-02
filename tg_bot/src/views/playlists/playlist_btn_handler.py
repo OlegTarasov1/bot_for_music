@@ -1,11 +1,12 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from utils.sql_requests.track_requests import TrackRequestsSQL
 from utils.keyboards.playlist_keyboards.list_playlists_kb import list_playlists_kb
 from schemas.cb_schemas.cb_playlists import PlaylistCallback
 from schemas.fsm_schemas.playlist_creation import PlaylistCreation
 from aiogram.fsm.context import FSMContext
 from utils.keyboards.playlist_keyboards.retreive_playlist_kb import retreive_playlist
+from crude.crude_path import path_vibe_final
 import logging
 
 
@@ -25,8 +26,9 @@ async def list_playlists(
     logging.warning(cb.from_user.id)
 
     if user_data:
-        await cb.message.edit_text(
-            text = "Плейлисты:",
+        await cb.message.edit_caption(
+            # animation = FSInputFile(path_vibe_final),
+            # caption = "Плейлисты:",
             reply_markup = await list_playlists_kb(
                 playlists = user_data.playlists
             )
@@ -71,7 +73,7 @@ async def playlist_creation(
         )
 
 
-# Обработка пагинации
+# получение страниц с плейлистами пользователя
 
 @playlist_router.callback_query(PlaylistCallback.filter(F.action == "get"))
 async def get_playlists(
@@ -82,8 +84,9 @@ async def get_playlists(
         user_id = cb.from_user.id
     )
 
-    await cb.message.edit_text(
-        text = "Плейлисты:",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        # caption = "Плейлисты:",
         reply_markup = await list_playlists_kb(
             playlists = user_data.playlists,
             limit = callback_data.limit,
@@ -99,12 +102,14 @@ async def retreive_playlists(
     cb: CallbackQuery,
     callback_data: PlaylistCallback
 ):
+    logging.warning(f"Playlist id: {callback_data.playlist_id}")
     playlist = await TrackRequestsSQL.get_playlist_by_id(
         playlist_id = callback_data.playlist_id
     )
 
-    await cb.message.edit_text(
-        text = f"Плейлист: {playlist.title}",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        caption = f"Плейлист: {playlist.title}",
         reply_markup = await retreive_playlist(
             playlist_data = playlist,
             limit = callback_data.limit,
@@ -128,8 +133,9 @@ async def playlist_delete(
         user_id = cb.from_user.id
     )
 
-    await cb.message.edit_text(
-        text = f"Плейлисты:",
+    await cb.message.edit_caption(
+        # animation = FSInputFile(path_vibe_final),
+        # caption = f"Плейлисты:",
         reply_markup = await list_playlists_kb(
             playlists = user_data.playlists,
             limit = callback_data.limit,

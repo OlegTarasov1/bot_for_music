@@ -14,8 +14,8 @@ async def retreival_action_choice(
     offset: int
 ) -> InlineKeyboardMarkup:
     
-    keayboard = InlineKeyboardBuilder()
-    keayboard.add(
+    kb = InlineKeyboardBuilder()
+    kb.add(
         InlineKeyboardButton(
             text = "Скачать",
             callback_data = MusicCallback(
@@ -27,7 +27,7 @@ async def retreival_action_choice(
             ).pack()
         )
     )
-    keayboard.add(
+    kb.add(
         InlineKeyboardButton(
             text = "Назад",
             callback_data = MusicCallback(
@@ -38,11 +38,23 @@ async def retreival_action_choice(
             ).pack()
         )
     )
-    keayboard.add(
+    kb.add(
+        InlineKeyboardButton(
+            text = "Добавить в плейлист",
+            callback_data = MusicCallback(
+                action = "add_pl",
+                limit = limit,
+                offset = offset,
+                request = request,
+                track_id=track_id
+            ).pack()
+        )
+    )
+    kb.row(
         InlineKeyboardButton(
             text = "Меню",
             callback_data = "menu"
         )
     )
 
-    return keayboard.as_markup()
+    return kb.as_markup()

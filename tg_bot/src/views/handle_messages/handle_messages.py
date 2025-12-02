@@ -3,8 +3,9 @@ from utils.api_integrations.auddio_api.get_audio import get_json_by_audio
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from settings.cache_settings import redis_client
 from .msg_callbacks.retreive_track import retreival_router
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from aiogram import Router, F
+from crude.crude_path import path_vibe_final
 import logging
 import json
 
@@ -18,8 +19,9 @@ messages_router.include_router(retreival_router)
 async def handle_text(msg: Message):
     request = msg.text.strip().lower()
     
-    await msg.answer(
-        text = "выберите:",
+    await msg.answer_animation(
+        # caption = "выберите:",
+        animation = FSInputFile(path_vibe_final),
         reply_markup = await list_music_kb(
             request = request
         )

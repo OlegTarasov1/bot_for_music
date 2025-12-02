@@ -16,8 +16,8 @@ async def handle_track_retreival(
     callback_data: MusicCallback
 ):
     
-    await cb.message.edit_text(
-        text = "Выберите:",
+    await cb.message.edit_caption(
+        caption = "Выберите:",
         reply_markup = await retreival_action_choice(
             track_id = callback_data.track_id,
             offset = callback_data.offset,
@@ -32,8 +32,8 @@ async def handle_track_retreival(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    await cb.message.edit_text(
-        text = "Выберите:",
+    await cb.message.edit_caption(
+        caption = "Выберите:",
         reply_markup = await list_music_kb(
             request = callback_data.request,
             limit = callback_data.limit,
@@ -46,8 +46,8 @@ async def download_handler(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    await cb.message.edit_text(
-        text = "Выберите:",
+    await cb.message.edit_caption(
+        # caption = "Выберите:",
         reply_markup = await list_music_kb(
             request = callback_data.request,
             limit = callback_data.limit,
@@ -58,8 +58,6 @@ async def download_handler(
     track_data = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id
     )
-    logging.warning("track_data:")
-    logging.warning(track_data)
     
     download_links = await get_mp3_links(track_data)
 
