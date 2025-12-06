@@ -1,14 +1,18 @@
 import logging
+from datetime import datetime
 from models import (
     UsersBase,
     PlaylistsBase,
     SongsBase,
-    SongsPlaylistsAssociation
+    SongsPlaylistsAssociation,
+    FavoritTracksAssociation
 )
+from sqlalchemy.dialects.postgresql import insert as insert_psql
 from settings.db_settings import async_session
 from schemas.pydantic_schemas.users_playlists import UsersPlaylistsSchema
 from schemas.pydantic_mixins.playlists_schema import PlaylistMixin
-from schemas.pydantic_schemas.playlists_songs import UsersPlaylistsSchema
+from schemas.pydantic_mixins.user_schema import UserMixin
+from schemas.pydantic_schemas.playlists_songs import PlaylistsSongsSchema
 from sqlalchemy import select, delete
 from sqlalchemy.orm import joinedload, selectinload
 from settings.cache_settings import redis_client_sql
@@ -23,17 +27,20 @@ class TrackRequestsSQL:
         user_id: int
     ) -> UsersBase | None:
         '''получение пользователя и его плейлистов + кэширование на 2 дня'''
-        user = await redis_client_sql.get(f"user_{user_id}")
-        if user:
-            user_dict = json.loads(user)
-            if user_dict.get("playlists"):
-                await redis_client_sql.set(
-                    f"user_{user_id}",
-                    user,
-                    ex = 60 * 60 * 24 * 2
-                )
-            else:
-                pass
+        # user = await redis_client_sql.get(f"user_{user_id}")
+        # if user:
+        #     user_dict = json.loads(user)
+        #     if type(user_dict.get("playlists")) == list:
+        #         user_to_model = UsersPlaylistsSchema.model_validate(user_dict)
+        #         user_dict = user_to_model.model_dump()
+        #         playlists = user_dict.pop("playlists")
+        #         user_to_return = UsersBase(**user_dict)
+        #         user_to_return.playlists = [
+        #             PlaylistsBase(**i)
+        #             for i in playlists
+        #         ]
+
+        #         return user_to_return
 
         async with async_session() as session:
             stmt = (
@@ -53,13 +60,14 @@ class TrackRequestsSQL:
             data = await session.execute(stmt)
             user_with_playlists = data.unique().scalar_one_or_none()
 
-            if user_with_playlists:
-                user_to_cache = UsersPlaylistsSchema.model_validate(user_with_playlists)
-                await redis_client_sql.set(
-                    f"user_{user_with_playlists.id}",
-                    user_to_cache.model_dump_json(),
-                    ex = 60 * 60 * 24 * 2
-                )
+            # if user_with_playlists:
+            #     user_to_cache = UsersPlaylistsSchema.model_validate(user_with_playlists)
+            #     logging.warning(f"user with playlists data: {user_to_cache.model_dump_json()}")
+            #     await redis_client_sql.set(
+            #         f"user_{user_with_playlists.id}",
+            #         user_to_cache.model_dump_json(),
+            #         ex = 60 * 60 * 24 * 2
+            #     )
                 
             return user_with_playlists
 
@@ -79,18 +87,8 @@ class TrackRequestsSQL:
             
             session.add(new_playlist)
             await session.commit()
-                    
-        user_cached = await redis_client_sql.get(f"user_{new_user_id}")
-        if user_cached:
-            user_cached_dict = json.loads(user_cached)
-            if isinstance(user_cached_dict.get("playlists"), list):
-                playlist = PlaylistMixin.model_validate(new_playlist)
-                user_cached.get("playlists").append(playlist.model_dump_json())
-                await redis_client_sql.set(
-                    f"user_{new_user_id}",
-                    user_cached,
-                    ex = 60 * 60 * 24 * 2
-                )
+                
+        # await redis_client_sql.delete(f"user_{new_user_id}")
 
         return new_playlist
     
@@ -101,17 +99,17 @@ class TrackRequestsSQL:
     ) -> PlaylistsBase:
         """получение плейлиста с треками по id плейлиста"""
 
-        playlist = await redis_client_sql.get(f"playlist_{playlist_id}")
-        if playlist:
-            playlist_dict = json.loads(playlist)
-            await redis_client_sql.set(
-                f"playlist_{playlist_id}",
-                playlist,
-                ex = 60 * 60 * 24
-            )
+        # playlist = await redis_client_sql.get(f"playlist_{playlist_id}")
+        # if playlist:
+        #     playlist_dict = json.loads(playlist)
+        #     await redis_client_sql.set(
+        #         f"playlist_{playlist_id}",
+        #         playlist,
+        #         ex = 60 * 60 * 24
+        #     )
 
-            playlist = PlaylistsBase(**playlist_dict)
-            return playlist
+        #     playlist = PlaylistsBase(**playlist_dict)
+        #     return playlist
 
         async with async_session() as session:
             stmt = (
@@ -131,13 +129,13 @@ class TrackRequestsSQL:
             playlist_data = await session.execute(stmt)
             playlist_data = playlist_data.unique().scalar_one_or_none()
 
-        if playlist_data:
-            playlist_to_cache = UsersPlaylistsSchema.model_validate(playlist_data)
-            await redis_client_sql.set(
-                f"playlist_{playlist_id}",
-                playlist_to_cache.model_dump_json(),
-                ex = 60 * 60 * 24
-            )
+        # if playlist_data:
+        #     playlist_to_cache = PlaylistsSongsSchema.model_validate(playlist_data)
+        #     await redis_client_sql.set(
+        #         f"playlist_{playlist_id}",
+        #         playlist_to_cache.model_dump_json(),
+        #         ex = 60 * 60 * 24
+        #     )
 
         return playlist_data
             
@@ -161,8 +159,8 @@ class TrackRequestsSQL:
             await session.execute(stmt)
             await session.commit()
             
-            await redis_client_sql.delete(f"playlist_{playlist_id}")
-            await redis_client_sql.delete(f"user_{user_id}")
+            # await redis_client_sql.delete(f"playlist_{playlist_id}")
+            # await redis_client_sql.delete(f"user_{user_id}")
 
 
     @staticmethod
@@ -170,55 +168,49 @@ class TrackRequestsSQL:
         track_id: int,
         track_name: str,
         playlist_id: int
-    ) -> bool:
+    ) -> None:
         """Добавление трека в плейлист и удаление плейлиста из кэша"""
 
-        playlist = await redis_client_sql.get(f"playlist_{playlist_id}")
-
         async with async_session() as session:
-            if playlist:
-                playlist_json = json.loads(playlist)
-                is_existant = False
-                for i in playlist_json.get("songs", []):
-                    if i.get("id") == track_id:
-                        is_existant = True
-            else:
-                stmt = (
-                    select(
-                        SongsPlaylistsAssociation
-                    )
-                    .where(
-                        SongsPlaylistsAssociation.playlist_id == playlist_id,
-                        SongsPlaylistsAssociation.song_id == track_id
-                    )
+
+            stmt = (
+                select(
+                    SongsBase
                 )
-
-                is_existant = await session.execute(stmt)
-                is_existant = is_existant.scalar_one_or_none()
-
-            if is_existant:
-
-                return False
-
-            new_song = SongsBase(
-                id = track_id,
-                song_title = track_name
-            )
-            session.add(new_song)
-            
-            await session.flush()
-
-            new_association = SongsPlaylistsAssociation(
-                playlist_id = playlist_id,
-                song_id = track_id
+                .where(
+                    SongsBase.id == track_id
+                )
             )
 
-            session.add(new_association)
+            is_existant = await session.execute(stmt)
+            is_existant = is_existant.scalar_one_or_none()
+
+            if not is_existant:
+                
+                new_song = SongsBase(
+                    id = track_id,
+                    song_title = track_name
+                )
+                session.add(new_song)
+                await session.flush()
+                
+            stmt = (
+                insert_psql(
+                    SongsPlaylistsAssociation
+                )
+                .values(
+                    playlist_id = playlist_id,
+                    song_id = track_id
+                )
+                .on_conflict_do_update(
+                    index_elements = ["song_id", "playlist_id"],
+                    set_={
+                        "time_added": datetime.now()
+                    }
+                )
+            )
+            await session.execute(stmt)
             await session.commit()
-
-        await redis_client_sql.delete(f"playlist_{playlist_id}")
-            
-        return True
 
 
     @staticmethod
@@ -243,3 +235,102 @@ class TrackRequestsSQL:
             await session.commit()
 
         await redis_client_sql.delete(f"playlist_{playlist_id}")
+
+
+    @staticmethod
+    async def get_favorit_tracks(
+        user_id: int
+    ) -> UsersBase:
+        """Функция возвращает пользователя с треками из списка favorit"""
+        async with async_session() as session:
+            stmt = (
+                select(
+                    UsersBase
+                )
+                .where(
+                    UsersBase.id == user_id
+                )
+                .options(
+                    selectinload(
+                        UsersBase.favorite_tracks
+                    )
+                )
+            )
+
+            user_data = await session.execute(stmt)
+            user_with_tracks = user_data.scalar_one_or_none()
+
+        return user_with_tracks
+
+
+    @staticmethod
+    async def add_track_to_favorits(
+        track_id: int,
+        user_id: int,
+        track_name: str
+    ) -> bool:
+        """Добавление трека в список Favorit пользователя"""
+        async with async_session() as session:
+            
+            stmt = (
+                select(
+                    SongsBase
+                )
+                .where(
+                    SongsBase.id == track_id
+                )
+            )
+
+            is_existant = await session.execute(stmt)
+            
+            is_existant = is_existant.scalar_one_or_none()
+
+            if not is_existant:
+                new_track = SongsBase(
+                    id = track_id,
+                    song_title = track_name
+                )
+                session.add(new_track)
+                await session.flush()
+
+
+            stmt = (
+                insert_psql(
+                    FavoritTracksAssociation
+                )
+                .values(
+                    user_id = user_id,
+                    song_id = track_id
+                )
+                .on_conflict_do_update(
+                    index_elements = ["user_id", "song_id"],
+                    set_={
+                        "time_added": datetime.now()
+                    }
+                )
+            )
+
+            await session.execute(stmt)
+
+            await session.commit()
+
+
+    @staticmethod
+    async def delete_track_from_favorits(
+        track_id: int,
+        user_id: int    
+    ) -> None:
+        """Удаление связи между треком и пользователем (FavoritTracksAssociation)"""
+        async with async_session() as session:
+            stmt = (
+                delete(
+                    FavoritTracksAssociation
+                )
+                .where(
+                    FavoritTracksAssociation.song_id == track_id,
+                    FavoritTracksAssociation.user_id == user_id
+                )
+            )
+
+            await session.execute(stmt)
+            await session.commit()

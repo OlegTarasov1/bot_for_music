@@ -12,7 +12,7 @@ import logging
 
 playlist_router = Router()
 
-# Обработка нажатия кнопки в меню
+# Обработка нажатия кнопки "плейлисты" в меню
 
 @playlist_router.callback_query(F.data == "playlists")
 async def list_playlists(
@@ -21,9 +21,6 @@ async def list_playlists(
     user_data = await TrackRequestsSQL.get_users_playlists(
         user_id = cb.from_user.id
     )
-
-    logging.warning(cb.message.from_user.id)
-    logging.warning(cb.from_user.id)
 
     if user_data:
         await cb.message.edit_caption(
@@ -109,7 +106,7 @@ async def retreive_playlists(
 
     await cb.message.edit_caption(
         # animation = FSInputFile(path_vibe_final),
-        caption = f"Плейлист: {playlist.title}",
+        # caption = f"Плейлист: {playlist.title}",
         reply_markup = await retreive_playlist(
             playlist_data = playlist,
             limit = callback_data.limit,
@@ -126,7 +123,8 @@ async def playlist_delete(
     callback_data: PlaylistCallback
 ):
     await TrackRequestsSQL.delete_playlist_by_id(
-        callback_data.playlist_id
+        playlist_id = callback_data.playlist_id,
+        user_id = cb.from_user.id
     )
 
     user_data = await TrackRequestsSQL.get_users_playlists(

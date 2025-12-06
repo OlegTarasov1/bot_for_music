@@ -15,14 +15,15 @@ async def handle_track_retreival(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    
+    request = cb.message.caption
+
     await cb.message.edit_caption(
-        caption = "Выберите:",
+        caption = request,
         reply_markup = await retreival_action_choice(
             track_id = callback_data.track_id,
             offset = callback_data.offset,
             limit = callback_data.limit,
-            request = callback_data.request            
+            request = request            
         )
     )
 
@@ -32,10 +33,12 @@ async def handle_track_retreival(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
+    request = cb.message.caption
+
     await cb.message.edit_caption(
-        caption = "Выберите:",
+        caption = request,
         reply_markup = await list_music_kb(
-            request = callback_data.request,
+            request = request,
             limit = callback_data.limit,
             offset = callback_data.offset
         )
@@ -46,14 +49,15 @@ async def download_handler(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    await cb.message.edit_caption(
-        # caption = "Выберите:",
-        reply_markup = await list_music_kb(
-            request = callback_data.request,
-            limit = callback_data.limit,
-            offset = callback_data.offset
-        )
-    )
+    # request = cb.message.caption
+    # await cb.message.edit_caption(
+    #     caption = request,
+    #     reply_markup = await list_music_kb(
+    #         request = request,
+    #         limit = callback_data.limit,
+    #         offset = callback_data.offset
+    #     )
+    # )
     
     track_data = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id

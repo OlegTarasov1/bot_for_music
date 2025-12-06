@@ -1,15 +1,16 @@
-from pydantic import BaseModel
-from pydantic.types import AnyType
+from pydantic import BaseModel, ConfigDict
+
 
 class UserMixin(BaseModel):
 
-    id: int | None
-    username: str | None
-    first_name: str| None
-    last_name: str | None
-    chat_id: int | None
+    id: int
+    username: str | None = None
+    first_name: str| None = None
+    last_name: str | None = None
+    chat_id: int
     is_admin: bool = False
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="ignore"
+    )

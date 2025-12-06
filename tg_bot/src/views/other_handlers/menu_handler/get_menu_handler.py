@@ -9,8 +9,6 @@ get_menu_router = Router()
 @get_menu_router.callback_query(F.data == "menu")
 async def return_menu(cb: CallbackQuery):
     await cb.message.edit_caption(
-        # animation = FSInputFile(path_vibe_final),
-        # caption = "меню:",
         reply_markup = await get_menu(cb.from_user.id)
     )
 

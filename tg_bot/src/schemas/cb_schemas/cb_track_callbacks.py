@@ -9,7 +9,7 @@ class TrackCallbacks(
     offset: int = 0
     limit: int = 10
 
-    request: str
-    track_id: int
-    playlist_id: int
+    request: str | None = None
+    track_id: int | None = None
+    playlist_id: int | None = None
     

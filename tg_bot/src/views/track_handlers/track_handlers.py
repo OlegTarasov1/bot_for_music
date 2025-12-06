@@ -24,6 +24,8 @@ async def list_tracks_of_playlist(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
+    request = cb.message.caption
+    
     playlists = await TrackRequestsSQL.get_users_playlists(
         user_id = cb.from_user.id
     )
@@ -34,7 +36,7 @@ async def list_tracks_of_playlist(
         reply_markup = await list_playlists_to_add_track(
             playlists = playlists.playlists,
             track_id = callback_data.track_id,
-            request = callback_data.request
+            request = request
         )
     )
 

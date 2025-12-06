@@ -2,6 +2,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
+from schemas.cb_schemas.cb_track_callbacks import TrackCallbacks
 
 
 user_menu = InlineKeyboardMarkup(
@@ -20,7 +21,9 @@ user_menu = InlineKeyboardMarkup(
         )],
         [InlineKeyboardButton(
             text = "Избранное",
-            callback_data = "shutter"
+            callback_data = TrackCallbacks(
+                action = "get_fav"
+            ).pack()
         )],
     ]
 )

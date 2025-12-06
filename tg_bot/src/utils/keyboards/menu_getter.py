@@ -12,6 +12,7 @@ async def get_menu(
 ) -> InlineKeyboardMarkup | None:
     if isinstance(user, int):
         user = await UsersRequestsSQL.get_user_by_id(user)
+        logging.warning("user collected for the menu")
     if user:
         match user.is_admin:
             case True:

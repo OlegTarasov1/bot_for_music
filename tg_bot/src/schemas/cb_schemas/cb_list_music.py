@@ -6,5 +6,5 @@ class MusicCallback(CallbackData, prefix = "l"):
     offset: int = 0
     limit: int = 10
     
-    request: str
+    request: str | None = None
     track_id: int | None = None
