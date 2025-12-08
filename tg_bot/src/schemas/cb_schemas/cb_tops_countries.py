@@ -9,4 +9,9 @@ class CountriesTopsCallback(
     offset: int = 0
     limit: int = 10
     
-    country: str | None
+    limit_pl: int = 10
+    offset_pl: int = 0
+    
+    track_id: int | None = None 
+    country: str | None = None
+    pl_id: int | None = None

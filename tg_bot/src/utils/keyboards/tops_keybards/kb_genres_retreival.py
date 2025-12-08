@@ -2,7 +2,7 @@ from utils.api_integrations.sound_cloud_api.search import search_for_music_by_ta
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from schemas.cb_schemas.cb_top_genres import GenresTopsCallback
-from settings.cache_settings import redis_client
+from settings.cache_settings import redis_client, redis_client_top
 from models.models import UsersBase
 import json
 import logging
@@ -17,21 +17,19 @@ async def retreive_genre(
 
     logging.warning(genre)
 
-    json_data = await redis_client.get(genre)
+    json_data = await redis_client_top.get(genre)
 
     if json_data:
         json_data = json.loads(json_data)
     else:
         json_data = await search_for_music_by_tag(
-            search_data = genre[4:].replace("_", " ")
+            search_data = genre
         )
-        await redis_client.set(
+        await redis_client_top.set(
             genre,
             json.dumps(json_data),
-            ex = 60*60*24
+            ex = 60 * 60 * 24
         )
-
-    print(json_data)
 
     start = offset * limit
     finish = start + limit
@@ -87,11 +85,19 @@ async def retreive_genre(
 
     kb.row(
         InlineKeyboardButton(
+            text = "Вернуться",
+            callback_data = "tops_by_genres"
+        )
+    )
+
+    kb.row(
+        InlineKeyboardButton(
             text = "Меню",
             callback_data = "menu"
         )
     )
 
     return kb.as_markup()
+
 
     

@@ -49,9 +49,7 @@ async def add_track_to_favorit(
         track_data = json.loads(track_data)
         for i in track_data:
             if int(i.get("id")) == track_id:
-                logging.warning(f"track data i: {i}")
                 track_name = str(i.get("title", "None"))
-                logging.warning(f"track name: {track_name}")
                 break
     else:
         track_data = await get_soundcloud_track_by_id(

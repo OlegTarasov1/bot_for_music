@@ -1,6 +1,8 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from schemas.cb_schemas.cb_top_genres import GenresTopsCallback
+from schemas.cb_schemas.cb_track_callbacks import TrackCallbacks
+from schemas.cb_schemas.cb_list_music import MusicCallback
 import logging
 
 
@@ -22,7 +24,7 @@ async def get_kb_for_tops_by_genres(
                 text = f"{start + i + 1}. {value}",
                 callback_data = GenresTopsCallback(
                     action = "retreive",
-                    genre = f"top_{value.replace(' ', '_')}"
+                    genre = value
                 ).pack()
             )
         )
@@ -76,7 +78,7 @@ async def kb_track_retreival(
     kb.add(
         InlineKeyboardButton(
             text = "Скачать",
-            callback_data = GenresTopsCallback(
+            callback_data = MusicCallback(
                 action = "download",
                 limit = limit,
                 track_id = track_id,
@@ -92,6 +94,42 @@ async def kb_track_retreival(
                 genre = genre 
             ).pack()
         ),
+        InlineKeyboardButton(
+            text = "Добавить в избранное",
+            callback_data = GenresTopsCallback(
+                action = "add_fav",
+                limit = limit,
+                offset = offset,
+                track_id = track_id
+            ).pack()
+        ),
+        InlineKeyboardButton(
+            text = "Добавить в плейлист",
+            callback_data = GenresTopsCallback(
+                action="list_pl",
+                limit = limit,
+                offset = offset,
+                track_id = track_id,
+                genre = genre
+            ).pack()
+        )
+    )
+
+    kb.adjust(2)
+
+    kb.row(
+        InlineKeyboardButton(
+            text = "Вернуться",
+            callback_data = GenresTopsCallback(
+                action = "retreive",
+                limit = limit,
+                genre = genre,
+                offset = offset
+            ).pack()
+        )
+    )
+
+    kb.row(
         InlineKeyboardButton(
             text = "Меню",
             callback_data = "menu"

@@ -46,8 +46,8 @@ redis_client = Redis(**redis_confs.conf_data)
 # Клиент для sql запросов
 redis_client_sql = Redis(**redis_confs_sql.conf_data)
 
-# Клиент для хранения запросов музыки (по факту, костыль, ну а хуле...) 
-redis_client_requests = Redis(**redis_config_for_request_names.conf_data)
+# Клиент для топов
+redis_client_top = Redis(**redis_config_for_request_names.conf_data)
 
 
 

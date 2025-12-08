@@ -54,6 +54,7 @@ async def search_for_music_by_tag(
     search_data: str,
     max_results: int | None = 50
 ) -> list[dict] | None:
+    logging.warning(f"searching for: {search_data} (request)")
     ydl_opts = {
         "quiet": True,
         "no_warnings": True,

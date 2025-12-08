@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from schemas.cb_schemas.cb_list_music import MusicCallback
-from settings.cache_settings import redis_client, redis_client_requests
+from settings.cache_settings import redis_client
 from utils.tops.get_tops import get_top_by_country
 from utils.api_integrations.sound_cloud_api.search import search_for_music
 import logging
@@ -11,7 +11,8 @@ import json
 async def list_music_kb(
     request: str,
     limit: int = 10,
-    offset: int = 0
+    offset: int = 0,
+    is_top: bool = False
 ) -> InlineKeyboardMarkup:
     
     json_list = await redis_client.get(request)
@@ -19,7 +20,7 @@ async def list_music_kb(
         json_list = json.loads(json_list)
     
     if not json_list:
-        match request.startswith("top_"):
+        match is_top:
             case False:
                 json_list = await search_for_music(
                     search_data=request
