@@ -6,7 +6,9 @@ from aiogram.filters import Command
 from aiogram.types import Message, FSInputFile
 from aiogram import Router, F
 from views.menu_handlers.menu_btns.favorit.favorit_handler import favorit_router
+from views.menu_handlers.admin_handlers.data_about_users.userdata_receive import get_data_router
 from crude.crude_path import path_vibe_final
+from views.menu_handlers.admin_handlers.send_messages.messaging import messaging_router
 import asyncio
 import logging
 
@@ -16,6 +18,9 @@ menu_router = Router()
 menu_router.include_router(search_btn_router)
 menu_router.include_router(tops_router)
 menu_router.include_router(favorit_router)
+menu_router.include_router(get_data_router)
+menu_router.include_router(messaging_router)
+
 
 @menu_router.message(Command("start"))
 async def get_user_data(msg: Message):

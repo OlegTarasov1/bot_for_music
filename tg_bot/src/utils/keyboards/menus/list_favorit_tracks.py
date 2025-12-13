@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from schemas.cb_schemas.cb_track_callbacks import TrackCallbacks
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from schemas.cb_schemas.cb_track_callbacks import TrackCallbacks
 from models import SongsBase
 
 

@@ -17,6 +17,8 @@ class UsersBase(Base):
     chat_id: Mapped[int | None] = mapped_column(BigInteger, nullable = True)
     is_admin: Mapped[bool] = mapped_column(default = False)
 
+    time_created: Mapped[datetime] = mapped_column(server_default = func.now(), nullable = False)
+
     playlists: Mapped[list["PlaylistsBase"]] = relationship(back_populates = "user")
     favorite_tracks: Mapped[list["SongsBase"]] = relationship(
         back_populates = "users",

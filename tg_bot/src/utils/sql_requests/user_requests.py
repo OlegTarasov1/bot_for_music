@@ -29,6 +29,9 @@ class UsersRequestsSQL:
 
             await session.commit()
 
+            await session.refresh(new_user)
+            
+            return new_user
             # if new_user:
             #     user_to_cache = UserMixin.model_validate(new_user)
             #     await redis_client_sql.set(
@@ -37,7 +40,6 @@ class UsersRequestsSQL:
             #         ex = 60 * 60 *24 * 2
             #     )
             
-            return new_user
 
 
     @staticmethod
@@ -71,6 +73,7 @@ class UsersRequestsSQL:
             user = await session.execute(stmt)
             user = user.scalar_one_or_none()
 
+            return user
             # if user:
             #     user_to_cache = UserMixin.model_validate(user)
             #     await redis_client_sql.set(
@@ -79,4 +82,25 @@ class UsersRequestsSQL:
             #         ex = 60 * 60 * 24 * 2
             #     )
 
-            return user
+        
+
+    @staticmethod
+    async def get_all_users() -> list[UsersBase]:
+        """Возвращает список пользователей (не админов)"""
+        async with async_session() as session:
+            stmt = (
+                select(
+                    UsersBase
+                )
+                .where(
+                    UsersBase.is_admin == False
+                )
+            )
+            
+            users_list = await session.execute(stmt)
+            users_list = users_list.scalars().all()
+
+            return users_list
+            
+
+        

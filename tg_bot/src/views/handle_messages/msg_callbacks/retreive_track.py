@@ -4,8 +4,10 @@ from schemas.cb_schemas.cb_list_music import MusicCallback
 from aiogram.types import CallbackQuery, FSInputFile
 from aiogram import Router, F
 from utils.keyboards.list_audio_keyboard import list_music_kb
-import logging
+from aiogram.enums import ParseMode
 from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import get_mp3_links, install_track, delete_file
+import logging
+import os
 
 
 retreival_router = Router()
@@ -77,7 +79,9 @@ async def download_handler(
             audio_file = FSInputFile(downloaded_filepath)
             await cb.message.answer_audio(
                 audio = audio_file,
-                title = track_data.get("title", "no_title")
+                title = track_data.get("title", "no_title"),
+                parse_mode = ParseMode.HTML,
+                caption = f"<a href = '{os.getenv('BOT_LINK')}'>Ссылка на бота.</a>"
             )
             await delete_file(filepath = downloaded_filepath)
         else:

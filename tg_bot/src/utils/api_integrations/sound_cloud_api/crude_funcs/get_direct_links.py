@@ -62,9 +62,7 @@ async def install_track(
                 )
             
             response = output_link / f"{file_name}.mp3"
-            logging.warning("response after download:")
-            logging.warning(response)
-            logging.warning("downloaded check")
+            
             return response 
 
         except Exception as e:
