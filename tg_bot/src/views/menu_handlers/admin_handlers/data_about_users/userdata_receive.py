@@ -17,12 +17,9 @@ async def get_users_data(
     users_list = await UsersRequestsSQL.get_all_users()
     response_text = f"Всего пользователей: {len(users_list)}\n"
 
-
     # Получение из кэша пользователей, которые использовали бота недавно #noqa
     used_bot_not_long_ago = await redis_client_sql.keys(pattern = "user_*")
-    # used_bot_not_long_ago = json.loads(used_bot_not_long_ago)
     response_text += f"Использовали бота недавно: {len(used_bot_not_long_ago)}\n"
-
 
     # сборка пользователей, подписавшихся сегодня # noqa
     subscribed_today = []
@@ -32,12 +29,13 @@ async def get_users_data(
 
     response_text += f"Подписалось сегодня: {len(subscribed_today)}\n"
 
+    # сборка списка отписавшихся  # noqa
+    unsubscribed_today = 0
+    for i in users_list:
+        if i.is_active == False and i.activation_toggle_time.date() == datetime.now().date():
+            unsubscribed_today += 1
 
-    # Получение списка отписавшихся из redis # noqa
-    unsubscribed_today = await redis_client_sql.keys(pattern = "unsubscribed_*")
-    # unsubscribed_today = json.loads(unsubscribed_today)
-    response_text += f"Отписалось сегодня: {len(unsubscribed_today)}"
-
+    response_text += f"Отписалось сегодня: {unsubscribed_today}"
 
     await cb.message.answer(
         text = response_text

@@ -79,8 +79,11 @@ async def add_track_to_playlist(
         playlist_id = callback_data.playlist_id
     )
 
-    if not addition_result:
-        await cb.answer("Трек и так уже был в пейлисте")
+    logging.warning('the bug is somewhere here.')
+    
+    await cb.answer("Трек был добавлен в плейлист")
+    # if not addition_result:
+    #     await cb.answer("Трек и так уже был в пейлисте")
 
     await cb.message.edit_caption(
         # animation = FSInputFile(path_vibe_final),

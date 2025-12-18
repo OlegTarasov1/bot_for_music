@@ -43,7 +43,7 @@ async def kb_choose_pl(
     if start > 0:
         nav.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = CountriesTopsCallback(
                     action = "choose_pl",
                     track_id = track_id,
@@ -59,7 +59,7 @@ async def kb_choose_pl(
     if finish < len(playlists):
         nav.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = CountriesTopsCallback(
                     action = "choose_pl",
                     track_id = track_id,
@@ -76,7 +76,7 @@ async def kb_choose_pl(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Вернуться",
+            text = "Вернуться ↩️",
             callback_data = CountriesTopsCallback(
                 action = "retreive",
                 track_id = track_id,
@@ -92,7 +92,7 @@ async def kb_choose_pl(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

@@ -3,6 +3,7 @@ from uuid import uuid4
 import logging
 import asyncio
 import yt_dlp
+import os
 
 
 async def async_download_audio_from_video(
@@ -24,6 +25,7 @@ async def async_download_audio_from_video(
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
+        'playlist_items': '1',
         'quiet': True,
         'no_warnings': False,
         'continuedl': True,
@@ -35,6 +37,10 @@ async def async_download_audio_from_video(
         }
     }
 
+
+    if os.getenv("PROXY_LINK"):
+        ydl_opts["proxy"] = os.getenv("PROXY_LINK")
+        
     try:
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:

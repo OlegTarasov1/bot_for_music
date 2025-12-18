@@ -56,7 +56,7 @@ async def retreive_genre(
     if start > 0:
         nav_blk.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = GenresTopsCallback(
                     action = "retreive",
                     offset = offset - 1,
@@ -68,7 +68,7 @@ async def retreive_genre(
     if finish < len(json_data):
         nav_blk.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = GenresTopsCallback(
                     action = "retreive",
                     offset = offset + 1,
@@ -85,14 +85,14 @@ async def retreive_genre(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Вернуться",
+            text = "Вернуться ↩️",
             callback_data = "tops_by_genres"
         )
     )
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

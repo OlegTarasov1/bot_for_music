@@ -46,7 +46,7 @@ async def list_playlists(
     if start > 0:
         nav.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = GenresTopsCallback(
                     action = "list_pl",
                     limit = limit,
@@ -62,7 +62,7 @@ async def list_playlists(
     if finish < len(playlists):
         nav.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = GenresTopsCallback(
                     action = "list_pl",
                     limit = limit,
@@ -79,7 +79,7 @@ async def list_playlists(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Вернуться",
+            text = "Вернуться ↩️",
             callback_data = GenresTopsCallback(
                 action = "retreive_track",
                 limit = limit,
@@ -93,7 +93,7 @@ async def list_playlists(
     )
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

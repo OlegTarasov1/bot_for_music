@@ -1,5 +1,6 @@
 from yt_dlp import YoutubeDL
 import asyncio
+import os
 
 
 async def search_for_music(
@@ -12,6 +13,10 @@ async def search_for_music(
         "extract_flat": True,
         "skip_download": True
     }
+    
+    if os.getenv("PROXY_LINK"):
+        ydl_opts["proxy"] = os.getenv("PROXY_LINK")
+
     search_query = f"scsearch{max_results}:{search_data}"
 
     with YoutubeDL(ydl_opts) as ydl:

@@ -37,7 +37,7 @@ async def retreive_playlist(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Удалить плейлист",
+            text = "Удалить плейлист 🗑️",
             callback_data = PlaylistCallback(
                 action = "delete",
                 playlist_id = playlist_data.id,
@@ -46,7 +46,7 @@ async def retreive_playlist(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Вернуться",
+            text = "Вернуться ↩️",
             callback_data = PlaylistCallback(
                 action = "get",
                 limit = limit,
@@ -57,7 +57,7 @@ async def retreive_playlist(
     
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

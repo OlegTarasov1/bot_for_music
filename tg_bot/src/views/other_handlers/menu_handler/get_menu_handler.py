@@ -8,7 +8,13 @@ get_menu_router = Router()
 
 @get_menu_router.callback_query(F.data == "menu")
 async def return_menu(cb: CallbackQuery):
-    await cb.message.edit_caption(
-        reply_markup = await get_menu(cb.from_user.id)
-    )
-
+    try:
+        await cb.message.edit_caption(
+            reply_markup = await get_menu(cb.from_user.id)
+        )
+    except:
+        await cb.message.delete()
+        await cb.message.answer_animation(
+            animation = FSInputFile(path_vibe_final),
+            reply_markup = await get_menu(cb.from_user.id)
+        )

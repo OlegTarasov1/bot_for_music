@@ -46,7 +46,7 @@ async def list_playlists_kb(
     if start > 0:
         nav_btns.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = PlaylistCallback(
                     action = "get",
                     limit = limit,
@@ -58,7 +58,7 @@ async def list_playlists_kb(
     if finish < len(playlists):
         nav_btns.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = PlaylistCallback(
                     action = "get",
                     limit = limit,
@@ -71,7 +71,7 @@ async def list_playlists_kb(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

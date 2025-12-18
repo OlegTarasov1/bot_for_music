@@ -12,17 +12,17 @@ is_correct_kb = InlineKeyboardMarkup(
     inline_keyboard = [
         [
             InlineKeyboardButton(
-                text = "Всё корректно",
+                text = "Всё корректно ✅",
                 callback_data = "shutter"
             ),
             InlineKeyboardButton(
-                text = "Изменить",
+                text = "Изменить 📝",
                 callback_data = "shutter"
             )
         ],
         [
             InlineKeyboardButton(
-                text = "Меню",
+                text = "Меню 📑",
                 callback_data = "menu"
             )
         ]

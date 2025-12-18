@@ -31,7 +31,6 @@ async def handle_text(msg: Message):
         await msg.delete()
 
         await msg.answer(
-            # animation = FSInputFile(path_vibe_final),
             text = request,
             reply_markup = await link_received_kb()
         )
@@ -51,6 +50,9 @@ async def handle_text(msg: Message):
 async def handle_audio(msg: Message):
     folder_path = Path(__file__).parent.parent.parent / "media"
 
+    pending_message = await msg.answer(
+        text = "скачивается"
+    )
     if msg.audio:
         file_path = folder_path / f"{uuid4()}.mp3"
         audio_id = msg.audio.file_id
@@ -75,6 +77,9 @@ async def handle_audio(msg: Message):
         file_path = new_path
 
     try:
+        await pending_message.edit_text(
+            text = "поиск подходящего трека..."
+        )
         request = await get_json_by_audio(file_path)
         if request.get("result", dict()).get("title", None):
             await msg.answer(
@@ -91,6 +96,8 @@ async def handle_audio(msg: Message):
         await msg.answer("что-то пошло не так")
 
     finally:
+        await pending_message.delete()
+        
         await delete_file(
             filepath = str(file_path)
         )

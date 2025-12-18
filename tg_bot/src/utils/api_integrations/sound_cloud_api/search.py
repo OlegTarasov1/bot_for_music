@@ -1,4 +1,5 @@
 from yt_dlp import YoutubeDL 
+import os
 import logging
 import asyncio
 import json
@@ -14,6 +15,10 @@ async def search_for_music(
         "extract_flat": True,
         "skip_download": True
     }
+    
+    if os.getenv("PROXY_LINK"):
+        ydl_opts["proxy"] = os.getenv("PROXY_LINK")
+
     search_query = f"scsearch{max_results if max_results else ''}:{search_data}"
 
     with YoutubeDL(ydl_opts) as ydl:
@@ -35,6 +40,9 @@ async def get_soundcloud_track_by_id(track_id: int | str) -> dict | None:
         'quiet': True,
         'no_warnings': True,
     }
+    
+    if os.getenv("PROXY_LINK"):
+        ydl_opts["proxy"] = os.getenv("PROXY_LINK")
 
     with YoutubeDL(ydl_opts) as ydl:
         try:
@@ -61,6 +69,10 @@ async def search_for_music_by_tag(
         "extract_flat": True,
         "skip_download": True
     }
+    
+    if os.getenv("PROXY_LINK"):
+        ydl_opts["proxy"] = os.getenv("PROXY_LINK")
+        
     search_query = f"scsearch{max_results if max_results else ''}:tag:{search_data}"
 
     with YoutubeDL(ydl_opts) as ydl:

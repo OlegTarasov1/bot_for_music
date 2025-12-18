@@ -36,7 +36,7 @@ async def get_kb_for_tops_by_genres(
     if start > 0:
         nav_btns.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = GenresTopsCallback(
                     offset = offset - 1
                 ).pack()
@@ -45,7 +45,7 @@ async def get_kb_for_tops_by_genres(
     if finish < len(tags):
         nav_btns.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = GenresTopsCallback(
                     offset = offset + 1 
                 ).pack() 
@@ -56,7 +56,7 @@ async def get_kb_for_tops_by_genres(
 
     kb.row(
         InlineKeyboardButton(
-            text = "меню",
+            text = "меню 📑",
             callback_data = "menu"
         )
     )
@@ -77,7 +77,7 @@ async def kb_track_retreival(
     
     kb.add(
         InlineKeyboardButton(
-            text = "Скачать",
+            text = "Скачать 📥",
             callback_data = MusicCallback(
                 action = "download",
                 limit = limit,
@@ -86,7 +86,7 @@ async def kb_track_retreival(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Назад",
+            text = "Назад ↩️",
             callback_data = GenresTopsCallback(
                 action = "retreive",
                 limit = limit,
@@ -95,7 +95,7 @@ async def kb_track_retreival(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в избранное",
+            text = "Добавить в избранное ❤️",
             callback_data = GenresTopsCallback(
                 action = "add_fav",
                 limit = limit,
@@ -104,7 +104,7 @@ async def kb_track_retreival(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в плейлист",
+            text = "Добавить в плейлист ➕",
             callback_data = GenresTopsCallback(
                 action="list_pl",
                 limit = limit,
@@ -117,21 +117,21 @@ async def kb_track_retreival(
 
     kb.adjust(2)
 
-    kb.row(
-        InlineKeyboardButton(
-            text = "Вернуться",
-            callback_data = GenresTopsCallback(
-                action = "retreive",
-                limit = limit,
-                genre = genre,
-                offset = offset
-            ).pack()
-        )
-    )
+    # kb.row(
+    #     InlineKeyboardButton(
+    #         text = "Вернуться ↩️",
+    #         callback_data = GenresTopsCallback(
+    #             action = "retreive",
+    #             limit = limit,
+    #             genre = genre,
+    #             offset = offset
+    #         ).pack()
+    #     )
+    # )
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

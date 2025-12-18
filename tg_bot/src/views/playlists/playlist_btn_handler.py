@@ -7,6 +7,7 @@ from schemas.fsm_schemas.playlist_creation import PlaylistCreation
 from aiogram.fsm.context import FSMContext
 from utils.keyboards.playlist_keyboards.retreive_playlist_kb import retreive_playlist
 from crude.crude_path import path_vibe_final
+from utils.keyboards.menu_getter import get_menu
 import logging
 
 
@@ -68,7 +69,12 @@ async def playlist_creation(
         await msg.answer(
             text = f"Новый плейлист '{title}' был добавлен."
         )
-
+        await msg.answer_animation(
+            animation = FSInputFile(path_vibe_final),
+            reply_markup = await get_menu(
+                user = msg.from_user.id
+            )
+        )
 
 # получение страниц с плейлистами пользователя
 

@@ -16,6 +16,9 @@ async def get_direct_music_url(
         'skip_download': True
     }
 
+    if os.getenv("PROXY_LINK"):
+        ydl_opts["proxy"] = os.getenv("PROXY_LINK")
+
     with YoutubeDL(ydl_opts) as ydl:
         result = await asyncio.to_thread(
             ydl.extract_info,
@@ -55,6 +58,9 @@ async def install_track(
                 'quiet': False,
             }
 
+            if os.getenv("PROXY_LINK"):
+                ydl_opts["proxy"] = os.getenv("PROXY_LINK")
+                
             with YoutubeDL(ydl_opts) as ydl:
                 await asyncio.to_thread(
                     ydl.download,

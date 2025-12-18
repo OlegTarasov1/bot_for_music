@@ -1,7 +1,8 @@
 from models import UsersBase
+from datetime import datetime
 from settings.db_settings import async_session
 from schemas.pydantic_mixins.user_schema import UserMixin
-from sqlalchemy import select
+from sqlalchemy import select, delete, update
 from settings.cache_settings import redis_client_sql
 import logging
 import json
@@ -30,36 +31,32 @@ class UsersRequestsSQL:
             await session.commit()
 
             await session.refresh(new_user)
-            
-            return new_user
-            # if new_user:
-            #     user_to_cache = UserMixin.model_validate(new_user)
-            #     await redis_client_sql.set(
-            #         f"user_{new_user.id}",
-            #         user_to_cache.model_dump_json(),
-            #         ex = 60 * 60 *24 * 2
-            #     )
-            
 
+            user_json = UserMixin.model_validate(new_user)
+
+            await redis_client_sql.set(
+                f"user_{new_user.id}",
+                user_json.model_dump_json(),
+                ex = 60 * 60 * 24 * 2
+            ) 
+
+            return new_user
+            
 
     @staticmethod
     async def get_user_by_id(
         tg_id: int
     ) -> UsersBase | None:
-        
-        # cached_user = await redis_client_sql.get(f"user_{tg_id}")
-        # if cached_user:
-        #     pass_to_user = UserMixin.model_validate_json(cached_user)
-        #     user = UsersBase(**pass_to_user.model_dump())
-            
-        #     await redis_client_sql.set(
-        #         f"user_{user.id}",
-        #         cached_user,
-        #         ex = 60 * 60 * 24 * 2
-        #     )
-        #     return user
 
-        
+        cached_data = await redis_client_sql.get(
+            f"user_{tg_id}"
+        )
+        if cached_data:
+            user_data = UserMixin.model_validate_json(cached_data)
+            user = UsersBase(**user_data.model_dump())
+
+            return user
+
         async with async_session() as session:
             stmt = (
                 select(
@@ -73,14 +70,16 @@ class UsersRequestsSQL:
             user = await session.execute(stmt)
             user = user.scalar_one_or_none()
 
+            if user:
+                user_to_cache = UserMixin.model_validate(user)
+
+                await redis_client_sql.set(
+                    f"user_{user.id}",
+                    user_to_cache.model_dump_json(),
+                    ex = 60 * 60 * 24 * 2
+                )
+
             return user
-            # if user:
-            #     user_to_cache = UserMixin.model_validate(user)
-            #     await redis_client_sql.set(
-            #         f"user_{user.id}",
-            #         user_to_cache.model_dump_json(),
-            #         ex = 60 * 60 * 24 * 2
-            #     )
 
         
 
@@ -101,6 +100,34 @@ class UsersRequestsSQL:
             users_list = users_list.scalars().all()
 
             return users_list
+        
+
+    @staticmethod
+    async def activate_deactivate_user_by_id(
+        tg_id: int,
+        toggle_status: bool
+    ) -> None:
+        """Обработка удаления пользователя по id из бд и из кэша"""
+        await redis_client_sql.delete(
+            f"user_{tg_id}"
+        )
+
+        async with async_session() as session:
+            stmt = (
+                update(
+                    UsersBase
+                )
+                .values(
+                    UsersBase.is_active == toggle_status,
+                    UsersBase.activation_toggle_time == datetime.now()
+                )
+                .where(
+                    UsersBase.id == tg_id
+                )
+            )
             
+            await session.execute(stmt)
+            await session.commit()
+
 
         

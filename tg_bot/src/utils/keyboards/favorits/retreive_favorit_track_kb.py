@@ -13,14 +13,14 @@ async def retreive_favorit_track_kb(
 
     kb.add(
         InlineKeyboardButton(
-            text = "Скачать",
+            text = "Скачать 📥",
             callback_data = MusicCallback(
                 action = "download",
                 track_id = track_id
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Назад",
+            text = "Назад ↩️",
             callback_data = TrackCallbacks(
                 action = "get_fav",
                 limit = limit,
@@ -28,7 +28,7 @@ async def retreive_favorit_track_kb(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Удалить из избранных",
+            text = "Удалить из избранных 🗑️",
             callback_data = TrackCallbacks(
                 action = "del_fav",
                 track_id=track_id,
@@ -40,7 +40,7 @@ async def retreive_favorit_track_kb(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

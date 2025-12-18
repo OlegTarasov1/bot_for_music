@@ -16,8 +16,10 @@ class UsersBase(Base):
     last_name: Mapped[str | None] = mapped_column(String(255), nullable = True)
     chat_id: Mapped[int | None] = mapped_column(BigInteger, nullable = True)
     is_admin: Mapped[bool] = mapped_column(default = False)
-
     time_created: Mapped[datetime] = mapped_column(server_default = func.now(), nullable = False)
+
+    is_active: Mapped[bool] = mapped_column(default = True)
+    activation_toggle_time: Mapped[datetime] = mapped_column(server_default = func.now(), nullable = True)
 
     playlists: Mapped[list["PlaylistsBase"]] = relationship(back_populates = "user")
     favorite_tracks: Mapped[list["SongsBase"]] = relationship(

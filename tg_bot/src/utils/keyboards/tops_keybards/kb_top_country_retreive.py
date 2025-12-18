@@ -15,14 +15,14 @@ async def kb_track_for_country_retreival(
 
     kb.add(
         InlineKeyboardButton(
-            text = "Скачать",
+            text = "Скачать 📥",
             callback_data = MusicCallback(
                 action = "download",
                 track_id = track_id 
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Вернуться",
+            text = "Вернуться ↩️",
             callback_data = CountriesTopsCallback(
                 action = "get_c_top",
                 track_id = track_id,
@@ -34,14 +34,14 @@ async def kb_track_for_country_retreival(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в избранное",
+            text = "Добавить в избранное 💖",
             callback_data = TrackCallbacks(
                 action = "add_fav",
                 track_id = track_id
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в плейлист",
+            text = "Добавить в плейлист 🎧",
             callback_data = CountriesTopsCallback(
                 action = "choose_pl",
                 track_id = track_id,
@@ -58,7 +58,7 @@ async def kb_track_for_country_retreival(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

@@ -16,7 +16,7 @@ async def retreive_audio_data(
 
     kb.add(
         InlineKeyboardButton(
-            text = "Скачать",
+            text = "Скачать 📥",
             callback_data = PlaylistCallback(
                 action = "get_track",
                 playlist_id = playlist_id,
@@ -28,7 +28,7 @@ async def retreive_audio_data(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Назад",
+            text = "Назад ↩️",
             callback_data = PlaylistCallback(
                 action = "retreive",
                 playlist_id = playlist_id,
@@ -42,7 +42,7 @@ async def retreive_audio_data(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Удалить из плейлиста",
+            text = "Удалить из плейлиста 🗑️",
             callback_data = PlaylistCallback(
                 action = "del_conn",
                 playlist_id = playlist_id,
@@ -57,7 +57,7 @@ async def retreive_audio_data(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

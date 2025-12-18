@@ -33,7 +33,7 @@ async def list_favorit_tracks_kb(
     if start > 0:
         nav.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = TrackCallbacks(
                     action = "get_fav",
                     limit = limit,
@@ -45,7 +45,7 @@ async def list_favorit_tracks_kb(
     if finish < len(tracks_list):
         nav.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = TrackCallbacks(
                     action = "get_fav",
                     limit = limit,
@@ -57,7 +57,7 @@ async def list_favorit_tracks_kb(
     kb.row(*nav)
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

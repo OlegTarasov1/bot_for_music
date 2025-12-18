@@ -9,13 +9,13 @@ admin_menu = InlineKeyboardMarkup(
     inline_keyboard = [
         [
             InlineKeyboardButton(
-                text = "Данные о пользователях",
+                text = "Данные о пользователях 📊",
                 callback_data = "get_data_about_users"
             )
         ],
         [
             InlineKeyboardButton(
-                text = "Массовая рассылка",
+                text = "Массовая рассылка 📢",
                 callback_data = "send_messages"
             )
         ],

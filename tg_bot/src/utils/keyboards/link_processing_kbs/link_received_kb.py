@@ -7,17 +7,17 @@ async def link_received_kb() -> InlineKeyboardMarkup:
 
     kb.add(
         InlineKeyboardButton(
-            text = "Скачать mp3",
+            text = "Скачать mp3 📥",
             callback_data = "get_audio"
         ),
         InlineKeyboardButton(
-            text = "Скачать используемый трек",
+            text = "Скачать используемый трек 🎵",
             callback_data = "extract_audio"
         )
     )
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )

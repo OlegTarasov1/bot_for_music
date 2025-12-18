@@ -45,20 +45,78 @@ async def get_text_for_spam(
 ):
     text = msg.text.strip().lower()
     if text == "отмена":
-        state.clear()
+        await state.clear()
         await msg.answer("Ввод отменён")
     else:
         text = text.capitalize()
         await state.update_data(text = text)
-        await state.set_state(SpamFSM.reply_markup)
+        await state.set_state(SpamFSM.media)
 
-        man_text = "Если хотите добавить ссылку пропишите текст для ссылки и саму ссылку через знак: \"|\" (если несколько, то через запятую)"
-        man_text += "\n\n\nПример:\n\n"
-        man_text += "текст для ссылки | https://...<сама ссылка>,\n"
-        man_text += "текст для ссылки | https://...<сама ссылка>"
+        message_text = "Вы можете:\n"
+        message_text += "Отправить фото/гифку\n"
+        message_text += "написать 'отмена' - чтобы отменить отправку сообщения\n"
+        message_text += "написать 'нет', чтобы не добавлять фото/гифку"
+
         await msg.answer(
-            text = man_text,
-            reply_markup = example_kb
+            text = message_text
+            # reply_markup = example_kb
+        )
+
+
+# Добавление фото к сообщению
+@messaging_router.message(SpamFSM.media)
+async def set_picture_or_gif(
+    msg: Message,
+    state: FSMContext
+):
+    man_text = "Если хотите добавить ссылку пропишите текст для ссылки и саму ссылку через знак: \"|\" (если несколько, то через запятую)"
+    man_text += "\n\n\nПример:\n\n"
+    man_text += "текст для ссылки | https://...<сама ссылка>,\n"
+    man_text += "текст для ссылки | https://...<сама ссылка>"
+
+    if msg.text:
+        match msg.text.strip().lower():
+            case "отмена":
+                await state.clear()
+                await msg.answer("Ввод отменён")
+            case "нет":
+                await state.set_state(SpamFSM.reply_markup)
+
+                await msg.answer(
+                    text = man_text,
+                    reply_markup = example_kb
+                )
+            case _:
+                message_text = f"Некорректный ввод: {msg.text}\n\n"
+                message_text += "Вы можете:\n"
+                message_text += "Отправить фото/гифку\n"
+                message_text += "написать 'отмена' - чтобы отменить отправку сообщения\n"
+                message_text += "написать 'нет', чтобы не добавлять фото/гифку"
+
+                await msg.answer(message_text)
+
+    elif msg.photo:
+        file_id = f"photo_{msg.photo[-1].file_id}"
+        await state.set_state(SpamFSM.reply_markup)
+        await state.update_data(media = file_id)
+        await msg.answer(
+            text = man_text
+        )
+
+    elif msg.animation:
+        file_id = f"animation_{msg.animation.file_id}"
+        await state.set_state(SpamFSM.reply_markup)
+        await state.update_data(media = file_id)
+        await msg.answer(
+            text = man_text
+        )
+
+    elif msg.video:
+        file_id = f"video_{msg.video.file_id}"
+        await state.set_state(SpamFSM.reply_markup)
+        await state.update_data(media = file_id)
+        await msg.answer(
+            text = man_text
         )
 
 
@@ -72,13 +130,53 @@ async def set_markup(
     if msg.text.strip().lower() == "отмена":
         await state.clear()
         await msg.answer("Ввод отменён")
+
+    elif msg.text.strip().lower() == "нет":
+        await state.set_state(SpamFSM.verification)
+        data = await state.get_data()
+
+        if data.get("media", None):
+            logging.warning(data.get("media")[:5])
+            match data.get("media")[:5]:
+                case "photo":
+                    await msg.answer_photo(
+                        caption = data.get("text"),
+                        photo = data.get("media", "").strip("photo_") if data.get("media") else None,
+                    )
+                case "video":
+                    await msg.answer_video(
+                        caption = data.get("text"),
+                        video = data.get("media", "").strip("video_") if data.get("media") else None
+                    )
+                case "anima":
+                    await msg.answer_animation(
+                        caption = data.get("text"),
+                        animation = data.get("media", "").strip("video_") if data.get("media") else None,
+                        reply_markup = await kb_with_links(
+                            markup_lists
+                        )
+                    )
+                case _:
+                    logging.error(data.get("media"))
+                    await msg.answer(
+                        text = "некорректные данные (media)"
+                    )
+        else:
+            await msg.answer(
+                text = data.get("text")
+            )
+
+        await msg.answer(
+            text = "всё корректно?",
+            reply_markup = answer_kb
+        )   
+
     elif len(msg.text.split("|")) > 0:
         markup_text = msg.text
         
         try:
             markup_text = markup_text.split(",")
 
-            
             markup_lists = []
             for i in markup_text:
                 start, finish, *_ = i.split("|")
@@ -88,19 +186,56 @@ async def set_markup(
                 )
 
             data = await state.get_data()
-            await msg.answer(
-                text = data.get("text"),
-                reply_markup = await kb_with_links(
-                    markup_lists
+            if data.get("media", None):
+                logging.warning(data.get("media")[:5])
+                match data.get("media")[:5]:
+                    case "photo":
+                        await msg.answer_photo(
+                            caption = data.get("text"),
+                            photo = data.get("media").strip("photo_"),
+                            reply_markup = await kb_with_links(
+                                markup_lists
+                            )
+                        )
+                    case "video":
+                        await msg.answer_video(
+                            caption = data.get("text"),
+                            video = data.get("media").strip("video_"),
+                            reply_markup = await kb_with_links(
+                                markup_lists
+                            )
+                        )
+                    case "anima":
+                        await msg.answer_animation(
+                            caption = data.get("text"),
+                            animation = data.get("media").strip("video_"),
+                            reply_markup = await kb_with_links(
+                                markup_lists
+                            )
+                        )
+                    case _:
+                        logging.error(data.get("media"))
+                        await msg.answer(
+                            text = "некорректные данные (media)"
+                        )
+
+            else:
+                await msg.answer(
+                    text = data.get("text"),
+                    reply_markup = await kb_with_links(
+                        markup_lists
+                    )
                 )
-            )
+
             await msg.answer(
                 text = "Всё верно?:",
                 reply_markup = answer_kb
             )
             await state.update_data(reply_markup = msg.text)
             await state.set_state(SpamFSM.verification)
-        except:
+
+        except Exception as e:
+            logging.error(e)
             await msg.answer("Введены не корректные данные")
 
 
@@ -118,14 +253,14 @@ async def correctness_check(
 
             msg_text = str(data.get("text"))
             markup_text = str(data.get("reply_markup"))
-
-            if markup_text:
+            
+            if markup_text != "None":
+                logging.warning(f"markup text passed: {markup_text}")
+                
                 markup_lists = []
 
                 markup_text = markup_text.split(",")                
-                logging.warning(f"mk text: {markup_text}")
-                logging.warning(f"msg_text: {msg_text}")
-
+                
                 for i in markup_text:
                     start, finish, *_ = i.split("|")
                     
@@ -141,6 +276,7 @@ async def correctness_check(
                 await start_spamming(
                     user = i,
                     message_text = msg_text,
+                    media = data.get("media"),
                     markup = await kb_with_links(
                         markup_lists
                     ) if markup_lists else None

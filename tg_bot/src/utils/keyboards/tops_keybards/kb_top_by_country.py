@@ -36,7 +36,7 @@ async def list_top_for_country_kb(
     if start > 0:
         nav.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = CountriesTopsCallback(
                     action = "get_c_top",
                     limit=limit,
@@ -49,7 +49,7 @@ async def list_top_for_country_kb(
     if finish < len(top_countries_json):
         nav.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data =  CountriesTopsCallback(
                     action = "get_c_top",
                     limit=limit,
@@ -65,14 +65,14 @@ async def list_top_for_country_kb(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Вернуться",
+            text = "Вернуться ↩️",
             callback_data = "tops_by_countries"
         )
     )
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "Меню 📑",
             callback_data = "menu"
         )
     )
