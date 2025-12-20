@@ -81,7 +81,7 @@ async def download_handler(
                 audio = audio_file,
                 title = track_data.get("title", "no_title"),
                 parse_mode = ParseMode.HTML,
-                caption = f"<a href = '{os.getenv('BOT_LINK')}'>Ссылка на бота.</a>"
+                caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
             )
             await delete_file(filepath = downloaded_filepath)
         else:

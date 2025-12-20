@@ -1,4 +1,4 @@
-from aiogram.filters import ChatMemberUpdatedFilter, IS_MEMBER, IS_NOT_MEMBER
+from aiogram.filters import ChatMemberUpdatedFilter, LEFT, KICKED
 from aiogram.types import Message, ChatMemberUpdated
 from utils.sql_requests.user_requests import UsersRequestsSQL
 from aiogram import Router
@@ -7,7 +7,7 @@ from aiogram import Router
 delete_user_handler = Router()
 
 
-@delete_user_handler.chat_member(ChatMemberUpdatedFilter(IS_MEMBER >> IS_NOT_MEMBER))
+@delete_user_handler.chat_member(ChatMemberUpdatedFilter(member_status_changed = LEFT | KICKED))
 async def handle_unsubscription(
     evnt: ChatMemberUpdated
 ):
@@ -17,11 +17,11 @@ async def handle_unsubscription(
     )
 
 
-@delete_user_handler.chat_member(ChatMemberUpdatedFilter(IS_NOT_MEMBER >> IS_MEMBER))
-async def handle_subscription(
-    evnt: ChatMemberUpdated
-):
-    await UsersRequestsSQL.activate_deactivate_user_by_id(
-        tg_id = evnt.from_user.id,
-        toggle_status = True
-    )
+# @delete_user_handler.chat_member(ChatMemberUpdatedFilter(member_status_changed=JOINED))
+# async def handle_subscription(
+#     evnt: ChatMemberUpdated
+# ):
+#     await UsersRequestsSQL.activate_deactivate_user_by_id(
+#         tg_id = evnt.from_user.id,
+#         toggle_status = True
+#     )

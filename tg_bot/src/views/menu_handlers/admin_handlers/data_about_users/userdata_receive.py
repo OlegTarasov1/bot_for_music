@@ -13,15 +13,23 @@ get_data_router = Router()
 async def get_users_data(
     cb: CallbackQuery
 ):
-    # Получение пользователей (не админов) # noqa
+    # Получение пользователей (не админов)
     users_list = await UsersRequestsSQL.get_all_users()
-    response_text = f"Всего пользователей: {len(users_list)}\n"
+    response_text = f"Всего пользователей (за всё время подписывалось): {len(users_list)}\n"
 
-    # Получение из кэша пользователей, которые использовали бота недавно #noqa
+    # Отписалось всего (не админов)
+    unfollowed_users = 0
+    for i in users_list:
+        if not i.is_active:
+            unfollowed_users += 1
+    
+    response_text += f"Всего пользователей (за всё время отписалось): {unfollowed_users}\n"
+
+    # Получение из кэша пользователей, которые использовали бота недавно
     used_bot_not_long_ago = await redis_client_sql.keys(pattern = "user_*")
     response_text += f"Использовали бота недавно: {len(used_bot_not_long_ago)}\n"
 
-    # сборка пользователей, подписавшихся сегодня # noqa
+    # сборка пользователей, подписавшихся сегодня
     subscribed_today = []
     for i in users_list:
         if i.time_created.date() == datetime.today().date():
@@ -29,7 +37,7 @@ async def get_users_data(
 
     response_text += f"Подписалось сегодня: {len(subscribed_today)}\n"
 
-    # сборка списка отписавшихся  # noqa
+    # сборка списка отписавшихся 
     unsubscribed_today = 0
     for i in users_list:
         if i.is_active == False and i.activation_toggle_time.date() == datetime.now().date():

@@ -24,7 +24,7 @@ async def spamming_start(
         tg_id = cb.from_user.id
     )
 
-    message_text = "Введите текст, который вы хотите отправить пользователям.\n"
+    message_text = "Введите текст (медиа), который вы хотите отправить пользователям.\n"
     message_text += "Введите: \"Отмена\", чтобы остановить ввод.\n"
     message_text += "(далее вы сможете установить ссылки)"
 
@@ -43,82 +43,40 @@ async def get_text_for_spam(
     msg: Message,
     state: FSMContext
 ):
-    text = msg.text.strip().lower()
+    text = msg.text.strip().lower() if msg.text else msg.caption.strip().lower()
     if text == "отмена":
         await state.clear()
         await msg.answer("Ввод отменён")
     else:
-        text = text.capitalize()
+        text = msg.text.capitalize() if msg.text else msg.caption.capitalize()
         await state.update_data(text = text)
-        await state.set_state(SpamFSM.media)
+        await state.set_state(SpamFSM.reply_markup)
 
-        message_text = "Вы можете:\n"
-        message_text += "Отправить фото/гифку\n"
-        message_text += "написать 'отмена' - чтобы отменить отправку сообщения\n"
-        message_text += "написать 'нет', чтобы не добавлять фото/гифку"
+        message_text = "Если хотите добавить ссылку пропишите текст для ссылки и саму ссылку через знак: \"|\" (если несколько, то через запятую)"
+        message_text += "\n\n\nПример:\n\n"
+        message_text += "текст для ссылки | https://...<сама ссылка>,\n"
+        message_text += "текст для ссылки | https://...<сама ссылка>"
+
+        if msg.photo:
+            file_id = f"photo_{msg.photo[-1].file_id}"
+            await state.set_state(SpamFSM.reply_markup)
+            await state.update_data(media = file_id)
+
+        elif msg.animation:
+            file_id = f"animation_{msg.animation.file_id}"
+            await state.set_state(SpamFSM.reply_markup)
+            await state.update_data(media = file_id)
+
+        elif msg.video:
+            file_id = f"video_{msg.video.file_id}"
+            await state.set_state(SpamFSM.reply_markup)
+            await state.update_data(media = file_id)
 
         await msg.answer(
             text = message_text
             # reply_markup = example_kb
         )
-
-
-# Добавление фото к сообщению
-@messaging_router.message(SpamFSM.media)
-async def set_picture_or_gif(
-    msg: Message,
-    state: FSMContext
-):
-    man_text = "Если хотите добавить ссылку пропишите текст для ссылки и саму ссылку через знак: \"|\" (если несколько, то через запятую)"
-    man_text += "\n\n\nПример:\n\n"
-    man_text += "текст для ссылки | https://...<сама ссылка>,\n"
-    man_text += "текст для ссылки | https://...<сама ссылка>"
-
-    if msg.text:
-        match msg.text.strip().lower():
-            case "отмена":
-                await state.clear()
-                await msg.answer("Ввод отменён")
-            case "нет":
-                await state.set_state(SpamFSM.reply_markup)
-
-                await msg.answer(
-                    text = man_text,
-                    reply_markup = example_kb
-                )
-            case _:
-                message_text = f"Некорректный ввод: {msg.text}\n\n"
-                message_text += "Вы можете:\n"
-                message_text += "Отправить фото/гифку\n"
-                message_text += "написать 'отмена' - чтобы отменить отправку сообщения\n"
-                message_text += "написать 'нет', чтобы не добавлять фото/гифку"
-
-                await msg.answer(message_text)
-
-    elif msg.photo:
-        file_id = f"photo_{msg.photo[-1].file_id}"
-        await state.set_state(SpamFSM.reply_markup)
-        await state.update_data(media = file_id)
-        await msg.answer(
-            text = man_text
-        )
-
-    elif msg.animation:
-        file_id = f"animation_{msg.animation.file_id}"
-        await state.set_state(SpamFSM.reply_markup)
-        await state.update_data(media = file_id)
-        await msg.answer(
-            text = man_text
-        )
-
-    elif msg.video:
-        file_id = f"video_{msg.video.file_id}"
-        await state.set_state(SpamFSM.reply_markup)
-        await state.update_data(media = file_id)
-        await msg.answer(
-            text = man_text
-        )
-
+        
 
 # Получение клавиатуры из сообщения
 # Отправка тестового сообщения

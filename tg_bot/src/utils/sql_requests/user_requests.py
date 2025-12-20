@@ -118,8 +118,8 @@ class UsersRequestsSQL:
                     UsersBase
                 )
                 .values(
-                    UsersBase.is_active == toggle_status,
-                    UsersBase.activation_toggle_time == datetime.now()
+                    is_active = toggle_status,
+                    activation_toggle_time = datetime.now()
                 )
                 .where(
                     UsersBase.id == tg_id

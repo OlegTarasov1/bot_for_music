@@ -37,7 +37,13 @@ async def get_user_data(msg: Message):
             last_name = new_user_data.last_name,
             username = new_user_data.username,
             chat_id = msg.chat.id
-        )    
+        )
+    elif user:
+        if not user.is_active:
+            await UsersRequestsSQL.activate_deactivate_user_by_id(
+                tg_id = msg.from_user.id,
+                toggle_status = True
+            )
 
 
     await msg.answer_animation(
