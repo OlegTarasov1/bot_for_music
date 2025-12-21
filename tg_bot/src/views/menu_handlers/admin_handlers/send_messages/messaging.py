@@ -49,7 +49,12 @@ async def get_text_for_spam(
         await msg.answer("Ввод отменён")
     else:
         text = msg.text.capitalize() if msg.text else msg.caption.capitalize()
+        
+        logging.warning(msg.entities)
+
         await state.update_data(text = text)
+        await state.update_data(entities = msg.entities if msg.entities else msg.caption_entities)
+
         await state.set_state(SpamFSM.reply_markup)
 
         message_text = "Если хотите добавить ссылку пропишите текст для ссылки и саму ссылку через знак: \"|\" (если несколько, то через запятую)"
@@ -76,7 +81,7 @@ async def get_text_for_spam(
             text = message_text
             # reply_markup = example_kb
         )
-        
+
 
 # Получение клавиатуры из сообщения
 # Отправка тестового сообщения
@@ -98,16 +103,19 @@ async def set_markup(
             match data.get("media")[:5]:
                 case "photo":
                     await msg.answer_photo(
+                        caption_entities = data.get("entities"),
                         caption = data.get("text"),
                         photo = data.get("media", "").strip("photo_") if data.get("media") else None,
                     )
                 case "video":
                     await msg.answer_video(
+                        caption_entities = data.get("entities"),
                         caption = data.get("text"),
                         video = data.get("media", "").strip("video_") if data.get("media") else None
                     )
                 case "anima":
                     await msg.answer_animation(
+                        caption_entities = data.get("entities"),
                         caption = data.get("text"),
                         animation = data.get("media", "").strip("video_") if data.get("media") else None,
                         reply_markup = await kb_with_links(
@@ -121,6 +129,7 @@ async def set_markup(
                     )
         else:
             await msg.answer(
+                entities = data.get("entities"),
                 text = data.get("text")
             )
 
@@ -150,6 +159,7 @@ async def set_markup(
                     case "photo":
                         await msg.answer_photo(
                             caption = data.get("text"),
+                            caption_entities = data.get("entities"),
                             photo = data.get("media").strip("photo_"),
                             reply_markup = await kb_with_links(
                                 markup_lists
@@ -158,6 +168,7 @@ async def set_markup(
                     case "video":
                         await msg.answer_video(
                             caption = data.get("text"),
+                            caption_entities = data.get("entities"),
                             video = data.get("media").strip("video_"),
                             reply_markup = await kb_with_links(
                                 markup_lists
@@ -166,6 +177,7 @@ async def set_markup(
                     case "anima":
                         await msg.answer_animation(
                             caption = data.get("text"),
+                            caption_entities = data.get("entities"),
                             animation = data.get("media").strip("video_"),
                             reply_markup = await kb_with_links(
                                 markup_lists
@@ -180,6 +192,7 @@ async def set_markup(
             else:
                 await msg.answer(
                     text = data.get("text"),
+                    entities = data.get("entities"),
                     reply_markup = await kb_with_links(
                         markup_lists
                     )
@@ -235,6 +248,7 @@ async def correctness_check(
                     user = i,
                     message_text = msg_text,
                     media = data.get("media"),
+                    entities = data.get("entities"),
                     markup = await kb_with_links(
                         markup_lists
                     ) if markup_lists else None

@@ -29,6 +29,9 @@ async def get_users_data(
     used_bot_not_long_ago = await redis_client_sql.keys(pattern = "user_*")
     response_text += f"Использовали бота недавно: {len(used_bot_not_long_ago)}\n"
 
+    # Сборка пользователей сейчас подписаных
+    response_text += f"Пользователей подписано сейчас: {len(users_list) - unfollowed_users}\n"
+
     # сборка пользователей, подписавшихся сегодня
     subscribed_today = []
     for i in users_list:
