@@ -62,15 +62,6 @@ async def get_kb_for_tops_by_countries() -> InlineKeyboardMarkup:
                 offset = 0
             ).pack()
         ),
-        # InlineKeyboardButton(
-        #     text = "🇸🇪",
-        #     callback_data = CountriesTopsCallback(
-        #         action = "get_c_top",
-        #         country = "sweden",
-        #         limit = 10,
-        #         offset = 0
-        #     ).pack()
-        # ),
         InlineKeyboardButton(
             text = "🇮🇳",
             callback_data = CountriesTopsCallback(
