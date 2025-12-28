@@ -53,7 +53,7 @@ async def get_soundcloud_track_by_id(track_id: int | str) -> dict | None:
             )
             return info
         except Exception as e:
-            print(f"Трек не найден или ошибка: {e}")
+            logging.error(e)
             return None
 
 

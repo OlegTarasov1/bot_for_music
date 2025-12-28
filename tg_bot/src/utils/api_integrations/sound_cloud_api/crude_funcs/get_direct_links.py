@@ -37,7 +37,12 @@ async def get_mp3_links(
     logging.warning(f"entries:\n{entrie}")
     for i in entrie.get("formats", []):
         if i.get("url", None):
-            links.append(i.get("url"))
+            links.append(
+                {
+                    "url": i.get("url"),
+                    "format_id": i.get("format_id")
+                }
+            )
 
     logging.warning(links)
     return links

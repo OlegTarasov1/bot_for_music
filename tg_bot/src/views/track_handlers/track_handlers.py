@@ -156,21 +156,37 @@ async def get_track_from_playlist(
     cb: CallbackQuery,
     callback_data: PlaylistCallback
 ):
-    logging.warning(f"track id: {callback_data.track_id}")
     track_data = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id
     )
     
     download_links = await get_mp3_links(track_data)
+    logging.warning(download_links)
+    # http_mp3_0_0
 
     if download_links:
-        logging.warning("download_links:")
-        
+        for i in download_links:
+            try:
+                if i.get("format_id") in ["http_mp3_0_0"]:
+                    await cb.message.answer_audio(
+                        audio = i.get("url"),
+                        title = track_data.get("title", "no_title"),
+                        parse_mode = ParseMode.HTML,
+                        caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
+                    )
+                    return None
+            except Exception as e:
+                logging.warning(f"something didn't work {e}")
+
         downloaded_filepath = await install_track(
             download_links = download_links
         )
 
-        if downloaded_filepath:
+        download_links = [
+            i.get("url") for i in download_links
+        ]
+
+        if downloaded_filepath:                
             audio_file = FSInputFile(downloaded_filepath)
             await cb.message.answer_audio(
                 audio = audio_file,
