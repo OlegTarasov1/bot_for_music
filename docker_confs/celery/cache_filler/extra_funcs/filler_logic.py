@@ -9,25 +9,37 @@ import logging
 async def add_country_to_cache():
     for i in countries:
         top_country_data = await redis_client_top.get(i)
+        go_on = True
         if top_country_data:
-            continue
-        else:
+            top_json = json.loads(top_country_data)
+            logging.warning(f"len in: {len(top_json)}")
+            if len(top_json) > 40:
+                go_on = False
+            else: 
+                pass
+
+        if go_on:
             top = await get_top_by_country(country = i)
+            logging.warning(f"tops: {top}")
             top_countries_json = []
             for j in top.get("track", dict()):
-                if j.get("name", None):
-                    track_data = await search_for_music(
-                        search_data = j.get("name"),
-                        max_results = 1
-                    )
-                    track_data = track_data[0]
-                    
-                    await redis_client_top.set(
-                        f"track_{track_data.get('id', 'null')}",
-                        json.dumps(track_data),
-                        ex = 60 * 60 * 24 * 2
-                    )
-                    top_countries_json.append(track_data)
+                try:
+                    if j.get("name", None):
+                        track_data = await search_for_music(
+                            search_data = j.get("name"),
+                            max_results = 1
+                        )
+                        logging.warning(f"track data: {track_data}")
+                        track_data = track_data[0]
+                        
+                        await redis_client_top.set(
+                            f"track_{track_data.get('id', 'null')}",
+                            json.dumps(track_data),
+                            ex = 60 * 60 * 24 * 2
+                        )
+                        top_countries_json.append(track_data)
+                except:
+                    pass
 
             await redis_client_top.set(
                 i,

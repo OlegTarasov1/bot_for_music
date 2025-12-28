@@ -23,7 +23,7 @@ app.conf.beat_schedule = {
     "fill_cache_periodically": {
         "task": f"{__name__}.fill_cache",
         "schedule": crontab(
-            minute='*/15'
+            minute='*/5'
         )
     }
 }
