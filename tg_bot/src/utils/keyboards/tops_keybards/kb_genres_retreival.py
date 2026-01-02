@@ -92,7 +92,7 @@ async def retreive_genre(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

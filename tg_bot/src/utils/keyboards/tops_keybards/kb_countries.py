@@ -95,7 +95,7 @@ async def get_kb_for_tops_by_countries() -> InlineKeyboardMarkup:
     kb.adjust(3)
     
     kb.row(InlineKeyboardButton(
-        text = "меню 📑",
+        text = "🔙 Назад",
         callback_data = "menu"
     ))
 

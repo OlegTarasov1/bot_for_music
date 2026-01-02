@@ -60,7 +60,7 @@ async def retreival_action_choice(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

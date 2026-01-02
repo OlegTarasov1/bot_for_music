@@ -71,7 +71,7 @@ async def list_playlists_kb(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

@@ -40,7 +40,7 @@ async def retreive_favorit_track_kb(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

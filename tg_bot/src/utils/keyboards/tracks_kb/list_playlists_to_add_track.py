@@ -64,7 +64,7 @@ async def list_playlists_to_add_track(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

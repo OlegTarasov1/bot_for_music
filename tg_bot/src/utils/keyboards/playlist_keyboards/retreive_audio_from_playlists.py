@@ -57,7 +57,7 @@ async def retreive_audio_data(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

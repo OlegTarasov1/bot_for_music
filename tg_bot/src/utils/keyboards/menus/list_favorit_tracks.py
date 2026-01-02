@@ -57,7 +57,7 @@ async def list_favorit_tracks_kb(
     kb.row(*nav)
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

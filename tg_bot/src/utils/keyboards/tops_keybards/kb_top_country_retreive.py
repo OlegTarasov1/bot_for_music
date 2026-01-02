@@ -58,7 +58,7 @@ async def kb_track_for_country_retreival(
 
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

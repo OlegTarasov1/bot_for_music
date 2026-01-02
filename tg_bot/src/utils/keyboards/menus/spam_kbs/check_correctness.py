@@ -22,7 +22,7 @@ is_correct_kb = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
-                text = "Меню 📑",
+                text = "🔙 Назад",
                 callback_data = "menu"
             )
         ]

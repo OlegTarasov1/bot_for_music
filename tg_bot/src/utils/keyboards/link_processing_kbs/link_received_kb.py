@@ -17,7 +17,7 @@ async def link_received_kb() -> InlineKeyboardMarkup:
     )
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

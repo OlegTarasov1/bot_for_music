@@ -17,7 +17,6 @@ async def get_kb_for_tops_by_genres(
     finish = offset * limit + limit
 
     btns = []
-    logging.warning("prior for loop")
     for i, value in enumerate(tags[start:finish]):
         btns.append(
             InlineKeyboardButton(
@@ -28,7 +27,6 @@ async def get_kb_for_tops_by_genres(
                 ).pack()
             )
         )
-    logging.warning("after for loop")
     kb.add(*btns)
     kb.adjust(3)
 
@@ -117,21 +115,9 @@ async def kb_track_retreival(
 
     kb.adjust(2)
 
-    # kb.row(
-    #     InlineKeyboardButton(
-    #         text = "Вернуться ↩️",
-    #         callback_data = GenresTopsCallback(
-    #             action = "retreive",
-    #             limit = limit,
-    #             genre = genre,
-    #             offset = offset
-    #         ).pack()
-    #     )
-    # )
-
     kb.row(
         InlineKeyboardButton(
-            text = "Меню 📑",
+            text = "🔙 Назад",
             callback_data = "menu"
         )
     )

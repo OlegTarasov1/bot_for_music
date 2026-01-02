@@ -18,7 +18,7 @@ tops_kb = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
-                text = "меню 📑",
+                text = "🔙 Назад",
                 callback_data = "menu"
             )
         ]
