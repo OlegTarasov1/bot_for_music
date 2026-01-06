@@ -19,7 +19,7 @@ async def retreival_action_choice(
     kb = InlineKeyboardBuilder()
     kb.add(
         InlineKeyboardButton(
-            text = "Скачать",
+            text = "Скачать 📥",
             callback_data = MusicCallback(
                 action = "download",
                 limit=limit,
@@ -29,7 +29,7 @@ async def retreival_action_choice(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Назад",
+            text = "Вернуться ↩️",
             callback_data = MusicCallback(
                 action = "get",
                 offset = offset,
@@ -38,7 +38,7 @@ async def retreival_action_choice(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в плейлист",
+            text = "Добавить в плейлист 🎧",
             callback_data = MusicCallback(
                 action = "add_pl",
                 limit = limit,
@@ -48,7 +48,7 @@ async def retreival_action_choice(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в избранное",
+            text = "Добавить в избранное 💖",
             callback_data = TrackCallbacks(
                 action = "add_fav",
                 track_id = track_id

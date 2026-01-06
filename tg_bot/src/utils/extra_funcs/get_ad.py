@@ -3,8 +3,10 @@ import aiohttp
 import os
 
 
-async def show_advert(user_id: int):
-
+async def show_advert(user_id: int) -> None:
+    """
+    This sends ad to user by user's id in chat with the bot
+    """
     async with aiohttp.ClientSession() as session:
 
         async with session.post(

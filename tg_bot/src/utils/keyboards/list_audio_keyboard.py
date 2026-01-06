@@ -77,7 +77,7 @@ async def list_music_kb(
     if start > 0:
         nav_blk.append(
             InlineKeyboardButton(
-                text = "Назад",
+                text = "◀️ Назад",
                 callback_data = MusicCallback(
                     action = "get",
                     offset = offset - 1,
@@ -89,7 +89,7 @@ async def list_music_kb(
     if finish < len(json_list):
         nav_blk.append(
             InlineKeyboardButton(
-                text = "Вперёд",
+                text = "Вперёд ▶️",
                 callback_data = MusicCallback(
                     action = "get",
                     offset = offset + 1,

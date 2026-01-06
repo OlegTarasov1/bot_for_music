@@ -5,7 +5,8 @@ from aiogram.types import CallbackQuery, FSInputFile
 from aiogram import Router, F
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from aiogram.enums import ParseMode
-from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import get_mp3_links, install_track, delete_file
+from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import get_mp3_links, install_track, delete_file, get_direct_mp3_links
+from utils.extra_funcs.get_ad import show_advert
 import logging
 import os
 
@@ -52,41 +53,45 @@ async def download_handler(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    # request = cb.message.caption
-    # await cb.message.edit_caption(
-    #     caption = request,
-    #     reply_markup = await list_music_kb(
-    #         request = request,
-    #         limit = callback_data.limit,
-    #         offset = callback_data.offset
-    #     )
-    # )
-    
     track_data = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id
     )
-    
-    download_links = await get_mp3_links(track_data)
+    logging.warning(f"track_data: {track_data}")
+
+    download_links = await get_direct_mp3_links(track_data)
 
     if download_links:
-        logging.warning("download_links:")
-        
-        downloaded_filepath = await install_track(
-            download_links = download_links
+        logging.warning(f"direct download link: {download_links[0]}")
+        await cb.message.answer_audio(
+            audio = download_links[0],
+            title = track_data.get("title", "no_title"),
+            parse_mode = ParseMode.HTML,
+            caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
         )
 
-        if downloaded_filepath:
-            audio_file = FSInputFile(downloaded_filepath)
-            await cb.message.answer_audio(
-                audio = audio_file,
-                title = track_data.get("title", "no_title"),
-                parse_mode = ParseMode.HTML,
-                caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
-            )
-            await delete_file(filepath = downloaded_filepath)
-        else:
-            await cb.answer("что-то пошло не так: не удалось скачать файл")
     else:
-        await cb.answer("что-то пошло не так: нет ссылок на скачивание")
+        download_links = await get_mp3_links(track_data)
 
+        if download_links:
+            logging.warning(f"\n\ndownload_links: {download_links}")
+            
+            downloaded_filepath = await install_track(
+                download_links = download_links
+            )
+
+            if downloaded_filepath:
+                audio_file = FSInputFile(downloaded_filepath)
+                await cb.message.answer_audio(
+                    audio = audio_file,
+                    title = track_data.get("title", "no_title"),
+                    parse_mode = ParseMode.HTML,
+                    caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
+                )
+                await delete_file(filepath = downloaded_filepath)
+            else:
+                await cb.answer("что-то пошло не так: не удалось скачать файл")
+        else:
+            await cb.answer("что-то пошло не так: нет ссылок на скачивание")
+
+    await show_advert(cb.from_user.id)
     

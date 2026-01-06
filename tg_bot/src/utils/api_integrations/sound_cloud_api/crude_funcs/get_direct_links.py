@@ -43,6 +43,31 @@ async def get_mp3_links(
     return links
 
 
+
+
+
+
+async def get_direct_mp3_links(
+    entrie: dict[dict[str]]
+) -> list[str] | None:
+    links = []
+
+    for i in entrie.get("formats", []):
+        if i.get("protocol", None) == "http" and not str(i.get("format_id")).endswith("preview"):
+            links.append(i.get("url"))
+
+    logging.warning(links)
+    return links
+
+
+
+
+
+
+
+
+
+
 async def install_track(
     download_links: list[str]
 ) -> str | None:
