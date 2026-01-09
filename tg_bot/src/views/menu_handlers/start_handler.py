@@ -28,7 +28,6 @@ async def get_user_data(msg: Message):
         tg_id = msg.from_user.id
     )
     
-
     await msg.answer(
         text = "Для получения меню или нажмите \"start\", или используйте кнопку снизу.",
         reply_markup = menu_r_mk
