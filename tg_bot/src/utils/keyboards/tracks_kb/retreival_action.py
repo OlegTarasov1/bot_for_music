@@ -48,7 +48,7 @@ async def retreival_action_choice(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в избранное 💖",
+            text = "Добавить в избранное ❤️",
             callback_data = TrackCallbacks(
                 action = "add_fav",
                 track_id = track_id

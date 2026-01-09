@@ -1,7 +1,7 @@
 from utils.keyboards.tracks_kb.retreival_action import retreival_action_choice
 from utils.api_integrations.sound_cloud_api.search import search_for_music, get_soundcloud_track_by_id
 from schemas.cb_schemas.cb_list_music import MusicCallback
-from aiogram.types import CallbackQuery, FSInputFile
+from aiogram.types import CallbackQuery, URLInputFile, FSInputFile
 from aiogram import Router, F
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from aiogram.enums import ParseMode
@@ -48,6 +48,9 @@ async def handle_track_retreival(
         )
     )
 
+
+# track download handler
+
 @retreival_router.callback_query(MusicCallback.filter(F.action == "download"))
 async def download_handler(
     cb: CallbackQuery,
@@ -63,8 +66,9 @@ async def download_handler(
     if download_links:
         logging.warning(f"direct download link: {download_links[0]}")
         await cb.message.answer_audio(
-            audio = download_links[0],
-            title = track_data.get("title", "no_title"),
+            audio = URLInputFile(download_links[0]),
+            title = track_data.get("title", "no title"),
+            performer = track_data.get("uploader", "no artist"),
             parse_mode = ParseMode.HTML,
             caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
         )
@@ -83,9 +87,10 @@ async def download_handler(
                 audio_file = FSInputFile(downloaded_filepath)
                 await cb.message.answer_audio(
                     audio = audio_file,
-                    title = track_data.get("title", "no_title"),
+                    title = track_data.get("title", "no title"),
+                    performer = track_data.get("uploader", "no artist"),
                     parse_mode = ParseMode.HTML,
-                    caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
+                    caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"        
                 )
                 await delete_file(filepath = downloaded_filepath)
             else:

@@ -34,7 +34,7 @@ async def kb_track_for_country_retreival(
             ).pack()
         ),
         InlineKeyboardButton(
-            text = "Добавить в избранное 💖",
+            text = "Добавить в избранное ❤️",
             callback_data = TrackCallbacks(
                 action = "add_fav",
                 track_id = track_id

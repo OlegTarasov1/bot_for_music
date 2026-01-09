@@ -8,9 +8,10 @@ from schemas.cb_schemas.cb_playlists import PlaylistCallback
 from utils.keyboards.playlist_keyboards.retreive_playlist_kb import retreive_playlist
 from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import get_mp3_links, install_track, delete_file, get_direct_mp3_links
 from utils.keyboards.playlist_keyboards.retreive_audio_from_playlists import retreive_audio_data
-from aiogram.types import CallbackQuery, FSInputFile
+from aiogram.types import CallbackQuery, FSInputFile, URLInputFile
 from utils.extra_funcs.get_ad import show_advert
 from crude.crude_path import path_vibe_final
+from utils.keyboards.menu_getter import menu_r_mk
 from aiogram.enums import ParseMode
 from aiogram import Router, F
 import logging
@@ -167,8 +168,9 @@ async def get_track_from_playlist(
     if download_links:
         logging.warning(f"direct download link: {download_links[0]}")
         await cb.message.answer_audio(
-            audio = download_links[0],
-            title = track_data.get("title", "no_title"),
+            audio = URLInputFile(download_links[0]),
+            title = track_data.get("title", "no title"),
+            performer = track_data.get("uploader", "no artist"),
             parse_mode = ParseMode.HTML,
             caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
         )
@@ -187,10 +189,11 @@ async def get_track_from_playlist(
                 audio_file = FSInputFile(downloaded_filepath)
                 await cb.message.answer_audio(
                     audio = audio_file,
-                    title = track_data.get("title", "no_title"),
+                    title = track_data.get("title", "no title"),
+                    performer = track_data.get("uploader", "no artist"),
                     parse_mode = ParseMode.HTML,
                     caption = f"<a href = '{os.getenv('BOT_LINK')}'>🔊 Нажми, чтобы найти песню</a>"
-                )
+            )
                 await delete_file(filepath = downloaded_filepath)
             else:
                 await cb.answer("что-то пошло не так: не удалось скачать файл")

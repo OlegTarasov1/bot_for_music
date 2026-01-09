@@ -1,6 +1,6 @@
 from utils.sql_requests.user_requests import UsersRequestsSQL
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from .menus.admin_menue import admin_menu
 from .menus.user_menu import user_menu
 from models.models import UsersBase
@@ -25,3 +25,14 @@ async def get_menu(
             "user tried to use the bot without being registered."
         )
         return user_menu
+    
+menu_r_mk = ReplyKeyboardMarkup(
+    keyboard = [
+        [
+            KeyboardButton(
+                text = "Главное меню 📋"
+            )
+        ]
+    ],
+    resize_keyboard = True
+)

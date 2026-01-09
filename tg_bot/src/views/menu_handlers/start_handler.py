@@ -1,8 +1,8 @@
 from utils.sql_requests.user_requests import UsersRequestsSQL
-from utils.keyboards.menu_getter import get_menu
+from utils.keyboards.menu_getter import get_menu, menu_r_mk
 from .menu_btns.search.search_btn import search_btn_router
 from .menu_btns.top.top_handler import tops_router
-from aiogram.filters import Command
+from aiogram.filters import Command, or_f
 from aiogram.types import Message, FSInputFile
 from aiogram import Router, F
 from views.menu_handlers.menu_btns.favorit.favorit_handler import favorit_router
@@ -22,12 +22,17 @@ menu_router.include_router(get_data_router)
 menu_router.include_router(messaging_router)
 
 
-@menu_router.message(Command("start"))
+@menu_router.message(or_f(Command("start"), F.text == "Главное меню 📋"))
 async def get_user_data(msg: Message):
     user = await UsersRequestsSQL.get_user_by_id(
         tg_id = msg.from_user.id
     )
+    
 
+    await msg.answer(
+        text = "Для получения меню или нажмите \"start\", или используйте кнопку снизу.",
+        reply_markup = menu_r_mk
+    )
 
     if not user:
         new_user_data = msg.from_user
@@ -44,7 +49,6 @@ async def get_user_data(msg: Message):
                 tg_id = msg.from_user.id,
                 toggle_status = True
             )
-
 
     await msg.answer_animation(
         # caption = "Меню",
