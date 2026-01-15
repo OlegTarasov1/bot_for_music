@@ -56,6 +56,9 @@ async def download_handler(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
+    notice_message = await cb.message.answer(
+        "Загрузка... ⌛"
+    )
     track_data = await get_soundcloud_track_by_id(
         track_id = callback_data.track_id
     )
@@ -98,5 +101,6 @@ async def download_handler(
         else:
             await cb.answer("что-то пошло не так: нет ссылок на скачивание")
 
+    await notice_message.delete()
     await show_advert(cb.from_user.id)
     
