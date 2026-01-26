@@ -142,6 +142,10 @@ async def handle_video(msg: Message):
         final_link = await convert_video_to_mp3(
             file_path = tg_file_path
         )
+        
+        await delete_file(
+            filepath = str(tg_file_path)
+        )
 
         await pending_message.edit_text(
             text = "поиск трека по аудио... ⌛"
@@ -167,7 +171,8 @@ async def handle_video(msg: Message):
         await delete_file(
             filepath = str(final_link)
         )
-
+        
         await delete_file(
             filepath = str(tg_file_path)
         )
+
