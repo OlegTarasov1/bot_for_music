@@ -40,9 +40,9 @@ async def convert_video_to_mp3(
         .input(str(file_path))
         .output(
             str(new_path),
-            {"vn": None},          # Убираем видео
-            acodec='libmp3lame',   # Кодируем в mp3
-            ab='192k'              # Битрейт (опционально)
+            vn=None,       
+            acodec='libmp3lame',   
+            ab='192k'
         )
     )
 

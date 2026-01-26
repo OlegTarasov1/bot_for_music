@@ -149,13 +149,14 @@ async def handle_video(msg: Message):
 
         request = await get_json_by_audio(str(final_link))
 
-        await msg.answer_animation(
-            caption = request,
-            animation = FSInputFile(path_vibe_final),
-            reply_markup = await list_music_kb(
-                request = request 
+        if request.get("result", dict()).get("title", None):
+            await msg.answer_animation(
+                caption = request.get("result", dict()).get("title", None),
+                animation = FSInputFile(path_vibe_final),
+                reply_markup = await list_music_kb(
+                    request = request.get("result", dict()).get("title", None)
+                )
             )
-        )
 
     except Exception as e:
         logging.warning(e)
