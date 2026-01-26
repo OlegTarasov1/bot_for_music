@@ -43,15 +43,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  celery_container:
-    build:
-      context: ./docker_confs/celery
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    # volumes:
-    #   - ./tg_bot/src/settings:/app/settings
-    #   - ./tg_bot/src/utils/api_integrations/sound_cloud_api:/app/celery/extra_funcs/sc_funcs
-    depends_on:
-      redis_container:
-        condition: service_healthy
+  # celery_container:
+  #   build:
+  #     context: ./docker_confs/celery
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - .env
+  #   # volumes:
+  #   #   - ./tg_bot/src/settings:/app/settings
+  #   #   - ./tg_bot/src/utils/api_integrations/sound_cloud_api:/app/celery/extra_funcs/sc_funcs
+  #   depends_on:
+  #     redis_container:
+  #       condition: service_healthy

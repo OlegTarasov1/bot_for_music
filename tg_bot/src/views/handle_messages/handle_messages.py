@@ -8,7 +8,7 @@ from aiogram import Router, F
 from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import delete_file
 from crude.crude_path import path_vibe_final
 from views.handle_messages.msg_callbacks.link_handlers import link_router
-from utils.extra_funcs.ogg_to_mp3 import convert_ogg_to_mp3
+from utils.extra_funcs.ogg_to_mp3 import convert_ogg_to_mp3, convert_video_to_mp3
 from uuid import uuid4
 from pathlib import Path
 import logging
@@ -21,6 +21,8 @@ messages_router = Router()
 messages_router.include_router(retreival_router)
 messages_router.include_router(link_router)
 
+
+# Обработка текстового запроса
 
 @messages_router.message(F.text)
 async def handle_text(msg: Message):
@@ -46,12 +48,13 @@ async def handle_text(msg: Message):
 
 # Получает аудио, конвертирует в mp3
 # Получает данные о треке с аудио через сторонний сервис
+
 @messages_router.message(F.audio | F.voice)
 async def handle_audio(msg: Message):
     folder_path = Path(__file__).parent.parent.parent / "media"
 
     pending_message = await msg.answer(
-        text = "скачивается"
+        text = "скачивается... ⌛"
     )
     if msg.audio:
         file_path = folder_path / f"{uuid4()}.mp3"
@@ -78,14 +81,14 @@ async def handle_audio(msg: Message):
 
     try:
         await pending_message.edit_text(
-            text = "поиск подходящего трека..."
+            text = "поиск подходящего трека... ⌛"
         )
         request = await get_json_by_audio(file_path)
         if request.get("result", dict()).get("title", None):
-            await msg.answer(
-                text = request.get("result", dict()).get("title", None)
-            )
-            await msg.answer(
+
+            await msg.answer_animation(
+                caption = request.get("result", dict()).get("title", None),
+                animation = FSInputFile(path_vibe_final),
                 reply_markup = await list_music_kb(
                     request = request.get("result", dict()).get("title")
                 )
@@ -103,7 +106,67 @@ async def handle_audio(msg: Message):
         )
 
 
+# Получает видео и конвертирует его в mp3
+# Ищет по аудио трек
 
 @messages_router.message(F.video)
 async def handle_video(msg: Message):
-    await msg.answer("not yet finished")
+
+    folder_path = Path(__file__).parent.parent.parent / "media"
+    
+    pending_message = await msg.answer(
+        text = "скачивается... ⌛"
+    )
+
+    tg_file_path = folder_path / f"{uuid4()}.mp4"
+    video_id = msg.video.file_id
+
+    video_path = await msg.bot.get_file(video_id)
+
+    try:
+        await video_path.bot.download_file(
+            file_path = video_path.file_path,
+            destination = tg_file_path
+        )
+    except Exception as e:
+        logging.warning(e)
+
+        return
+
+
+    await pending_message.edit_text(
+        text = "выделяется аудио... ⌛"
+    )
+
+    try:
+        final_link = await convert_video_to_mp3(
+            file_path = tg_file_path
+        )
+
+        await pending_message.edit_text(
+            text = "поиск трека по аудио... ⌛"
+        )
+
+        request = await get_json_by_audio(str(final_link))
+
+        await msg.answer_animation(
+            caption = request,
+            animation = FSInputFile(path_vibe_final),
+            reply_markup = await list_music_kb(
+                request = request 
+            )
+        )
+
+    except Exception as e:
+        logging.warning(e)
+
+    finally:
+        await pending_message.delete()
+        
+        await delete_file(
+            filepath = str(final_link)
+        )
+
+        await delete_file(
+            filepath = str(tg_file_path)
+        )
