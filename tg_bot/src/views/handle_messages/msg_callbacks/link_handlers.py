@@ -30,9 +30,7 @@ async def download_audio_from_video(
                 audio = audio_file,
                 title = "audio_from_video"
             )
-            await delete_file(
-                filepath = file_link
-            )
+
         else:
             await cb.answer("Что-то пошло не так, не вышло скачать.")
     except Exception as e:
@@ -40,6 +38,9 @@ async def download_audio_from_video(
         logging.error(e)
     finally:
         await pending_message.delete()
+        await delete_file(
+            filepath = file_link
+        )
 
 
 # Обработка выделения аудио из видео

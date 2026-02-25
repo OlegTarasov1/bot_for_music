@@ -8,9 +8,15 @@ RUN apt install make
 
 RUN apt install -y ffmpeg
 
+RUN curl -fsSL https://deno.land/install.sh | sh
+
+ENV PATH="/root/.deno/bin:${PATH}"
+
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
+
+RUN pip install -U yt-dlp
 
 COPY ./src .
 
