@@ -107,8 +107,10 @@ async def retreive_audio_in_playlist(
     cb: CallbackQuery,
     callback_data: PlaylistCallback
 ):
-    logging.warning(callback_data.track_id)
-    logging.warning("worked audio")
+    
+    await get_soundcloud_track_by_id(
+        track_id=callback_data.track_id
+    )
     await cb.message.edit_caption(
         # animation = FSInputFile(path_vibe_final),
         # caption = "Выберите:",

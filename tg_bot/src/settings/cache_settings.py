@@ -39,6 +39,7 @@ class RedisSettings(BaseSettings):
 redis_confs = RedisSettings(v_db = 0)
 redis_confs_sql = RedisSettings(v_db = 1)
 redis_config_for_request_names = RedisSettings(v_db = 2)
+redis_config_tracks = RedisSettings(v_db = 3)
 
 # Клиент для топов (ну так исторически сложилось уже...) 
 redis_client = Redis(**redis_confs.conf_data)
@@ -49,7 +50,8 @@ redis_client_sql = Redis(**redis_confs_sql.conf_data)
 # Клиент для топов
 redis_client_top = Redis(**redis_config_for_request_names.conf_data)
 
-
+# Клиент для кэширования треков
+redis_client_track = Redis(**redis_config_tracks.conf_data)
 
 
 # Семафоры
