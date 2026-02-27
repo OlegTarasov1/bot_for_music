@@ -29,7 +29,7 @@ async def get_user_data(msg: Message):
     )
     
     await msg.answer(
-        text = "❗️Скачивайте видео из Instagram, TikTok, YouTube с помощью нашего бесплатного бота: @Vibemuzic_bot",
+        text = "❗️Скачивайте видео из Instagram, TikTok, YouTube с помощью нашего бесплатного бота: @Vibsave_bot",
         reply_markup = menu_r_mk
     )
 
