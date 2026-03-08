@@ -1,6 +1,7 @@
 from utils.keyboards.tracks_kb.list_playlists_to_add_track import list_playlists_to_add_track
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from utils.api_integrations.sound_cloud_api.search import get_soundcloud_track_by_id
+from utils.extra_funcs.cache_name import retreive_name_from_cache, set_name_in_cache
 from utils.sql_requests.track_requests import TrackRequestsSQL
 from schemas.cb_schemas.cb_list_music import MusicCallback
 from schemas.cb_schemas.cb_track_callbacks import TrackCallbacks
@@ -28,7 +29,11 @@ async def list_tracks_of_playlist(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    request = cb.message.caption
+    # request = cb.message.caption
+    request = await retreive_name_from_cache(
+        msg_id = cb.message.message_id,
+        user_id = cb.from_user.id
+    )
     
     playlists = await TrackRequestsSQL.get_users_playlists(
         user_id = cb.from_user.id

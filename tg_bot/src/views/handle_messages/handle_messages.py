@@ -9,6 +9,7 @@ from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import 
 from crude.crude_path import path_vibe_final
 from views.handle_messages.msg_callbacks.link_handlers import link_router
 from utils.extra_funcs.ogg_to_mp3 import convert_ogg_to_mp3, convert_video_to_mp3
+from utils.extra_funcs.cache_name import set_name_in_cache, retreive_name_from_cache
 from uuid import uuid4
 from pathlib import Path
 import logging
@@ -29,6 +30,7 @@ async def handle_text(msg: Message):
 
     request = msg.text.strip()
 
+
     if request.startswith('http'):
         await msg.delete()
 
@@ -37,14 +39,22 @@ async def handle_text(msg: Message):
             reply_markup = await link_received_kb()
         )
     else:
-        await msg.answer_animation(
-            caption = request,
-            animation = FSInputFile(path_vibe_final),
+        msg_data = await msg.answer_animation(
+            # caption = request,
+            animation = FSInputFile(
+                path_vibe_final
+                # filename = "logo.gif"
+            ),
             reply_markup = await list_music_kb(
                 request = request 
             )
         )
 
+        await set_name_in_cache(
+            user_id = msg.from_user.id,
+            msg_id = msg_data.message_id,
+            name = request
+        )
 
 # Получает аудио, конвертирует в mp3
 # Получает данные о треке с аудио через сторонний сервис

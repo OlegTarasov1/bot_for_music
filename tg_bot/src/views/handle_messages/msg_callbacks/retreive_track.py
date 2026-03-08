@@ -6,6 +6,7 @@ from aiogram import Router, F
 from utils.keyboards.list_audio_keyboard import list_music_kb
 from aiogram.enums import ParseMode
 from utils.api_integrations.sound_cloud_api.crude_funcs.get_direct_links import get_mp3_links, install_track, delete_file, get_direct_mp3_links
+from utils.extra_funcs.cache_name import retreive_name_from_cache, set_name_in_cache
 from utils.extra_funcs.get_ad import show_advert
 import logging
 import os
@@ -19,10 +20,26 @@ async def handle_track_retreival(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    request = cb.message.caption
+    # request = cb.message.caption
+    request = await retreive_name_from_cache(
+        user_id = cb.from_user.id,
+        msg_id = cb.message.message_id
+    )
+    logging.warning(f"{cb.from_user.id}:{cb.message.message_id}: {request}")
+    track_data = await get_soundcloud_track_by_id(
+        track_id = callback_data.track_id
+    )
 
     await cb.message.edit_caption(
-        caption = request,
+        caption = " - ".join(
+            filter(
+                None,
+                [
+                    track_data.get("artist", None),
+                    track_data.get("title", "")
+                ]
+            )
+        ),
         reply_markup = await retreival_action_choice(
             track_id = callback_data.track_id,
             offset = callback_data.offset,
@@ -37,10 +54,19 @@ async def handle_track_retreival(
     cb: CallbackQuery,
     callback_data: MusicCallback
 ):
-    request = cb.message.caption
+
+
+    request = await retreive_name_from_cache(
+        user_id = cb.from_user.id,
+        msg_id = cb.message.message_id
+    )
+    
+    logging.warning(f"{cb.from_user.id}:{cb.message.message_id}: {request}")
+
+    logging.warning(f"request: {request}")
 
     await cb.message.edit_caption(
-        caption = request,
+        # caption = request,
         reply_markup = await list_music_kb(
             request = request,
             limit = callback_data.limit,
