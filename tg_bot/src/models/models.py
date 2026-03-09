@@ -18,6 +18,8 @@ class UsersBase(Base):
     is_admin: Mapped[bool] = mapped_column(default = False)
     time_created: Mapped[datetime] = mapped_column(server_default = func.now(), nullable = False)
 
+    source: Mapped[str] = mapped_column(nullable = True)
+
     is_active: Mapped[bool] = mapped_column(default = True)
     activation_toggle_time: Mapped[datetime] = mapped_column(server_default = func.now(), nullable = True)
 

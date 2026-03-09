@@ -10,6 +10,7 @@ class UserMixin(BaseModel):
     chat_id: int
     is_admin: bool = False
     is_active: bool = True
+    source: str | None = None
 
     model_config = ConfigDict(
         from_attributes=True,

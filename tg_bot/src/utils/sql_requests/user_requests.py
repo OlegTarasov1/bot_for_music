@@ -16,7 +16,8 @@ class UsersRequestsSQL:
         tg_id: int,
         username: str | None = None,
         first_name: str | None = None,
-        last_name: str | None = None
+        last_name: str | None = None,
+        source: str | None = None
     ) -> UsersBase:
         async with async_session() as session:
             new_user = UsersBase(
@@ -24,7 +25,8 @@ class UsersRequestsSQL:
                 username = username,
                 first_name = first_name,
                 last_name = last_name,
-                chat_id = chat_id
+                chat_id = chat_id,
+                source = source
             )
             session.add(new_user)
 

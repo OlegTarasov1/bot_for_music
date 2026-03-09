@@ -9,6 +9,8 @@ from views.menu_handlers.menu_btns.favorit.favorit_handler import favorit_router
 from views.menu_handlers.admin_handlers.data_about_users.userdata_receive import get_data_router
 from crude.crude_path import path_vibe_final
 from views.menu_handlers.admin_handlers.send_messages.messaging import messaging_router
+from aiogram.filters import CommandStart
+from aiogram.types import Message
 import asyncio
 import logging
 
@@ -22,25 +24,34 @@ menu_router.include_router(get_data_router)
 menu_router.include_router(messaging_router)
 
 
-@menu_router.message(or_f(Command("start"), F.text == "Главное меню 📋"))
+@menu_router.message(or_f(CommandStart(), F.text == "Главное меню 📋"))
 async def get_user_data(msg: Message):
+    
     user = await UsersRequestsSQL.get_user_by_id(
         tg_id = msg.from_user.id
     )
-    
+
     await msg.answer(
         text = "❗️Скачивайте видео из Instagram, TikTok, YouTube с помощью нашего бесплатного бота: @Vibsave_bot",
         reply_markup = menu_r_mk
     )
 
+    source = None
+    if len(msg.text.split()) > 1:
+        source = msg.text.split()[1].strip()
+
+    logging.warning(source)
+
     if not user:
+        logging.warning("no user in the database")
         new_user_data = msg.from_user
         user = await UsersRequestsSQL.create_new_user(
             tg_id = new_user_data.id,
             first_name = new_user_data.first_name,
             last_name = new_user_data.last_name,
             username = new_user_data.username,
-            chat_id = msg.chat.id
+            chat_id = msg.chat.id,
+            source = source
         )
     elif user:
         if not user.is_active:
