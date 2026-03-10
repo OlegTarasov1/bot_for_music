@@ -2,7 +2,7 @@ from models import UsersBase
 from datetime import datetime
 from settings.db_settings import async_session
 from schemas.pydantic_mixins.user_schema import UserMixin
-from sqlalchemy import select, delete, update
+from sqlalchemy import select, delete, update, func, desc
 from settings.cache_settings import redis_client_sql
 import logging
 import json
@@ -131,5 +131,30 @@ class UsersRequestsSQL:
             await session.execute(stmt)
             await session.commit()
 
+
+    @staticmethod
+    async def retreive_utm_user_data() -> list[dict]:
+
+        """Обработка выдачи utm статстики"""
+
+        async with async_session() as session:
+            stmt = (
+                select(
+                    UsersBase.source,
+                    func.count("*").label("source_count")
+                )
+                .group_by(
+                    UsersBase.source
+                )
+                .order_by(
+                    UsersBase.source
+                )
+            )
+
+            response_raw = await session.execute(stmt)
+
+            response = response_raw.mappings().all()
+
+            return response
 
         

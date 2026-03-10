@@ -1,6 +1,7 @@
 from utils.sql_requests.user_requests import UsersRequestsSQL
 from settings.cache_settings import redis_client_sql
 from aiogram.types import CallbackQuery
+from utils.extra_funcs.utm_stats_retreive import retreive_utm_stats
 from aiogram import Router, F
 from datetime import datetime
 import json
@@ -47,6 +48,11 @@ async def get_users_data(
             unsubscribed_today += 1
 
     response_text += f"Отписалось сегодня: {unsubscribed_today}"
+
+    # сборка ютм статы и добавление её в сообщение
+    utm_stats = await retreive_utm_stats()
+    
+    response_text += "\n\n" + "utm статистика:\n\n" + utm_stats
 
     await cb.message.answer(
         text = response_text
