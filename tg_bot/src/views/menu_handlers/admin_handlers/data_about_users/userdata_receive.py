@@ -52,7 +52,7 @@ async def get_users_data(
     # сборка ютм статы и добавление её в сообщение
     utm_stats = await retreive_utm_stats()
     
-    response_text += "\n\n" + "utm статистика:\n\n" + utm_stats
+    response_text += "\n\n" + "Статистика по трафику (UTM-метки):\n\n" + utm_stats
 
     await cb.message.answer(
         text = response_text
