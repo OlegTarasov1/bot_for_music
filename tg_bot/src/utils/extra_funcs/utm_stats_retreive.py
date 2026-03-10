@@ -12,7 +12,7 @@ async def retreive_utm_stats() -> str:
 
     for i in stats_data:
         if i.get("source") is None:
-            response_list.append(f"Неизвестно: {i.get('source_count')}")
+            response_list.append(f"Основная ссылка: {i.get('source_count')}")
         else:
             response_list.append(f"{i.get('source')}: {i.get('source_count')}")
 
