@@ -1,27 +1,43 @@
-from aiogram.filters import ChatMemberUpdatedFilter, LEFT, KICKED
-from aiogram.types import Message, ChatMemberUpdated
-from utils.sql_requests.user_requests import UsersRequestsSQL
 from aiogram import Router
+from aiogram.exceptions import TelegramForbiddenError
+from aiogram.types import ErrorEvent
+import logging
+from utils.sql_requests.user_requests import UsersRequestsSQL
+from aiogram.filters import ChatMemberUpdatedFilter
+from aiogram.types import ChatMemberUpdated
+from aiogram.filters.chat_member_updated import IS_MEMBER, IS_NOT_MEMBER
 
 
 delete_user_handler = Router()
 
 
-@delete_user_handler.chat_member(ChatMemberUpdatedFilter(member_status_changed = LEFT | KICKED))
-async def handle_unsubscription(
-    evnt: ChatMemberUpdated
-):
+# Обработка блокировки бота
+
+@delete_user_handler.my_chat_member(
+    ChatMemberUpdatedFilter(member_status_changed=(IS_MEMBER >> IS_NOT_MEMBER))
+)
+async def handle_unsubscription(event: ChatMemberUpdated):
+    user_id = event.from_user.id
     await UsersRequestsSQL.activate_deactivate_user_by_id(
-        tg_id = evnt.from_user.id,
-        toggle_status = False
+        user_id,
+        False
     )
+    
 
 
-# @delete_user_handler.chat_member(ChatMemberUpdatedFilter(member_status_changed=JOINED))
-# async def handle_subscription(
-#     evnt: ChatMemberUpdated
-# ):
-#     await UsersRequestsSQL.activate_deactivate_user_by_id(
-#         tg_id = evnt.from_user.id,
-#         toggle_status = True
-#     )
+# Обработка разблокировки бота
+
+@delete_user_handler.my_chat_member(
+    ChatMemberUpdatedFilter(member_status_changed=(IS_NOT_MEMBER >> IS_MEMBER))
+)
+async def on_unblock_without_message(event: ChatMemberUpdated):
+    user_id = event.from_user.id
+    await UsersRequestsSQL.activate_deactivate_user_by_id(
+        user_id,
+        True
+    )
+    
+
+
+
+
